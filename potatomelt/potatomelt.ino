@@ -1,10 +1,10 @@
 #include "robot.h"
 
-
 TaskHandle_t hotloop;
 long lastUpdated = 0;
 
 Robot robot;
+Battery battery;
 
 control_parameters_t control_params;
 
@@ -29,6 +29,8 @@ void setup() {
 
 // Arduino loop function. Runs in CPU 1.
 void loop() {
+    // todo: Get robot status in a more compartmentalized way
+    Serial.printf("Battery voltage: %f\n", battery.get_voltage());
 
     // The main loop must have some kind of "yield to lower priority task" event.
     // Otherwise, the watchdog will get triggered.
@@ -36,7 +38,7 @@ void loop() {
     // Detailed info here:
     // https://stackoverflow.com/questions/66278271/task-watchdog-got-triggered-the-tasks-did-not-reset-the-watchdog-in-time
 
-    vTaskDelay(1);
+    vTaskDelay(500);
 }
 
 // The robot control loop. Runs in CPU 0.

@@ -1,4 +1,5 @@
 #include "led.h"
+#include "battery.h"
 
 // The main struct shared by the robot side and the control side threads - contains the state of what we want the robot to do
 typedef struct control_parameters_t {
@@ -22,6 +23,8 @@ class Robot {
     private:
         unsigned long rotation_started_at_us;
         LED leds;
+        Battery battery;
+
+        // temp values for testing components
         int led_status_temp;
-        
 };
