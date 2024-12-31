@@ -6,7 +6,7 @@ enum Status {
 
 class LED {
     public:
-        void init();
+        LED();
         void leds_on(Status status);
         void leds_on_gradient(int color);
         void leds_off();

@@ -5,7 +5,7 @@
 rmt_data_t rmt_data[6 * 8];
 uint8_t pixel_color[6]; 
 
-void LED::init() {
+LED::LED() {
     rmtInit(NEOPIXEL_PIN, RMT_TX_MODE, RMT_MEM_NUM_BLOCKS_1, 10000000);
 }
 

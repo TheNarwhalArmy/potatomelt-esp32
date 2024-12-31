@@ -1,10 +1,11 @@
-#include "robot.h"
+#include <Wire.h>
+#include "src/robot.h"
+#include "melty_config.h"
 
 TaskHandle_t hotloop;
 long lastUpdated = 0;
 
 Robot robot;
-Battery battery;
 
 control_parameters_t control_params;
 
@@ -12,6 +13,12 @@ control_parameters_t control_params;
 void setup() {
     Serial.begin(115200);
     Serial.println("PotatoMelt startup");
+
+    // set up I2C
+    Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
+    Wire.setClock(400000);
+
+    robot.init();
 
     // and start the hot loop - it'll be managing LEDs and motors
     xTaskCreatePinnedToCore(
@@ -23,14 +30,15 @@ void setup() {
         &hotloop,  // task handle (if we want to interact with the task)
         0          // core affinity
     );
-
-    robot.init();
 }
+
+int i = 0;
 
 // Arduino loop function. Runs in CPU 1.
 void loop() {
     // todo: Get robot status in a more compartmentalized way
-    Serial.printf("Battery voltage: %f\n", battery.get_voltage());
+    Serial.printf("Z accel: %f, keepalive: %d\n", robot.get_z_buffer(), i);
+    i++;
 
     // The main loop must have some kind of "yield to lower priority task" event.
     // Otherwise, the watchdog will get triggered.
@@ -47,7 +55,7 @@ void hotloopFN(void* parameter) {
         // do the magic stuff
         robot.update_loop(&control_params);
 
-        //TODO: Update this to an appropriate, configurable delay
+        //TODO: Update this to a proper, configurable delay - probably 1-4khz
         // Probably 1-4 khz
         vTaskDelay(15);
     }

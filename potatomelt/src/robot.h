@@ -1,5 +1,7 @@
-#include "led.h"
-#include "battery.h"
+#include "subsystems/accelerometer.h"
+#include "subsystems/battery.h"
+#include "subsystems/imu.h"
+#include "subsystems/led.h"
 
 // The main struct shared by the robot side and the control side threads - contains the state of what we want the robot to do
 typedef struct control_parameters_t {
@@ -18,13 +20,13 @@ typedef struct control_parameters_t {
 // And the parent Robot class
 class Robot {
     public:
-        void init();
+        Robot();
         void update_loop(control_parameters_t* params);
+        float get_z_buffer();
+        void init();
     private:
         unsigned long rotation_started_at_us;
         LED leds;
         Battery battery;
-
-        // temp values for testing components
-        int led_status_temp;
+        IMU imu;
 };
