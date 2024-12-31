@@ -2,6 +2,7 @@
 #include "subsystems/battery.h"
 #include "subsystems/imu.h"
 #include "subsystems/led.h"
+#include "lib/DShot.h"
 
 // The main struct shared by the robot side and the control side threads - contains the state of what we want the robot to do
 typedef struct control_parameters_t {
@@ -29,4 +30,6 @@ class Robot {
         LED leds;
         Battery battery;
         IMU imu;
+        DShot motor1;
+        DShot motor2;
 };

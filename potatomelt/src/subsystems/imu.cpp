@@ -11,6 +11,7 @@ IMU::IMU() {
 void IMU::init() {
     lis1.init(0x18);
     lis2.init(0x19);
+    delay(20);
     set_z_offset();
 }
 

@@ -1,4 +1,5 @@
 #include "robot.h"
+#include "melty_config.h"
 
 Robot::Robot() {
 }
@@ -17,4 +18,6 @@ float Robot::get_z_buffer() {
 
 void Robot::init() {
     imu.init();
+    motor1.init(MOTOR_1_PIN);
+    motor2.init(MOTOR_2_PIN);
 }

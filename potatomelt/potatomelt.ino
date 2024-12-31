@@ -18,6 +18,7 @@ void setup() {
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
     Wire.setClock(400000);
 
+    // start the robot subsystems
     robot.init();
 
     // and start the hot loop - it'll be managing LEDs and motors
