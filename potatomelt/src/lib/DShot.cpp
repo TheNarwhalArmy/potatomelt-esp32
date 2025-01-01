@@ -9,6 +9,7 @@ DShot::DShot() {
 void DShot::init(int pin) {
     dshot_pin = pin;
     rmtInit(dshot_pin, RMT_TX_MODE, RMT_MEM_NUM_BLOCKS_1, DSHOT_ESC_RESOLUTION_HZ);
+    send_packet(0);
 }
 
 uint16_t DShot::create_packet(uint16_t throttle) {
@@ -46,7 +47,7 @@ void DShot::send_packet(uint16_t throttle) {
     rmt_data[17].level0 = 1;
     rmt_data[17].level1 = 0;
 
-    rmt_data[17].duration1 = 50;
+    rmt_data[17].duration1 = 100;
 
     rmtWriteLooping(dshot_pin, rmt_data, 16);
   }
