@@ -1,12 +1,19 @@
 #include <Arduino.h>
+#include <driver/rmt.h>
 #include "led.h"
-#include "melty_config.h"
+#include "../melty_config.h"
 
-rmt_data_t rmt_data[6 * 8];
+rmt_item32_t led_data[6*8];
 uint8_t pixel_color[6]; 
 
 LED::LED() {
-    rmtInit(NEOPIXEL_PIN, RMT_TX_MODE, RMT_MEM_NUM_BLOCKS_1, 10000000);
+    rmt_config_t rmt_cfg = RMT_DEFAULT_CONFIG_TX(NEOPIXEL_PIN, NEOPIXEL_RMT);
+
+    rmt_cfg.clk_div = 8; // theoretically, slow us down to 10mhz
+
+    rmt_config(&rmt_cfg);
+
+    rmt_driver_install(rmt_cfg.channel, 0, 0);
 }
 
 void LED::leds_on(Status status) {
@@ -56,18 +63,19 @@ void LED::write_pixel() {
       uint8_t value = chan;
       for (int bit = 7; bit >= 0; bit--) {
         if ((value >> bit) & 1) {
-          rmt_data[index].level0 = 1;
-          rmt_data[index].duration0 = 8;
-          rmt_data[index].level1 = 0;
-          rmt_data[index].duration1 = 4;
+          led_data[index].level0 = 1;
+          led_data[index].duration0 = 8;
+          led_data[index].level1 = 0;
+          led_data[index].duration1 = 4;
         } else {
-          rmt_data[index].level0 = 1;
-          rmt_data[index].duration0 = 4;
-          rmt_data[index].level1 = 0;
-          rmt_data[index].duration1 = 8;
+          led_data[index].level0 = 1;
+          led_data[index].duration0 = 4;
+          led_data[index].level1 = 0;
+          led_data[index].duration1 = 8;
         }
         index++;
       }
     }
-    rmtWriteAsync(NEOPIXEL_PIN, rmt_data, 6 * 8);
+
+    rmt_write_items(NEOPIXEL_RMT, led_data, 6*8, false);
   }

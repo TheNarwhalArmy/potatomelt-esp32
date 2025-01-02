@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "battery.h"
-#include "melty_config.h"
+#include "../melty_config.h"
 
 float Battery::get_voltage() {
     uint32_t adc_reading = analogReadMilliVolts(BATTERY_ADC_PIN);

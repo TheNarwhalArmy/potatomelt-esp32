@@ -1,12 +1,12 @@
 #include "accelerometer.h"
-#include "src/lib/SparkFun_LIS331.h"
+#include "../lib/SparkFun_LIS331_ESP32.h"
 
 Accelerometer::Accelerometer() { }
 
 void Accelerometer::init(int addr) {
     lis.setI2CAddr(addr);
-    lis.begin(LIS331::USE_I2C);
-    lis.setFullScale(LIS331::HIGH_RANGE);
+    lis.begin(LIS331ESP::USE_I2C);
+    lis.setFullScale(LIS331ESP::HIGH_RANGE);
 }
 
 // Assumption: We're only calling this when the bot is at rest, right-side-up, in a 1g environment.

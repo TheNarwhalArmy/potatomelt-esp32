@@ -2,8 +2,8 @@
 // By renaming "OPEN_DRAIN" to "DRAIN_OPEN" to avoid collision with ESP32 macro
 // Otherwise, it's the SparkFun library
 
-#ifndef __sparkfun_lis331_h__
-#define __sparkfun_lis331_h__
+#ifndef __sparkfun_lis331_esp32_h__
+#define __sparkfun_lis331_esp32_h__
 
 #include <stdint.h>
 
@@ -30,7 +30,7 @@
 #define INT2_THS         0x36
 #define INT2_DURATION    0x37
 
-class LIS331
+class LIS331ESP
 {
   public:
   // typedefs for this class
@@ -46,7 +46,7 @@ class LIS331
   typedef enum {TRIG_ON_HIGH, TRIG_ON_LOW} trig_on_level;
 
   // public functions
-  LIS331();   // Constructor. Defers all functionality to .begin()
+  LIS331ESP();   // Constructor. Defers all functionality to .begin()
   void begin(comm_mode mode);
   void setI2CAddr(uint8_t address);
   void setSPICSPin(uint8_t pin);

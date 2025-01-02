@@ -4,7 +4,6 @@
 #include <Bluepad32.h>
 #include <Arduino.h>
 #include <driver/rmt.h>
-#include "DShotRMT.h"
 
 #define NEO_PIN GPIO_NUM_17
 #define NEO_RMT RMT_CHANNEL_2

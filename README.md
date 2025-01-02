@@ -23,3 +23,7 @@ Blinking red: No controller connected or no recent controls received (failsafe)
 Solid blue: Controller connected, ready, in tank mode
 Solid red: Controller connected, battery depleted
 Drawing arcs, green fading to red: Spinning, displaying battery charge
+
+## Just In Case
+
+The arduino project build directory on Windows defaults to: C:\Users\{user}\AppData\Local\Temp\arduino\sketches

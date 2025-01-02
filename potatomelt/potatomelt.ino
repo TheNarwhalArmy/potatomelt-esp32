@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include "src/robot.h"
-#include "melty_config.h"
+#include "src/melty_config.h"
 
 TaskHandle_t hotloop;
 long lastUpdated = 0;
