@@ -19,7 +19,8 @@ Dpad up/down: Adjust translation calibration
 
 ## LED signals
 
-Blinking red: No controller connected or no recent controls received (failsafe)
+flashing red: No controller connected
+mostly red, flashing off: no recent control inputs detected (failsafe)
 Solid blue: Controller connected, ready, in tank mode
 Solid red: Controller connected, battery depleted
 Drawing arcs, green fading to red: Spinning, displaying battery charge

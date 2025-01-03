@@ -16,25 +16,32 @@ LED::LED() {
     rmt_driver_install(rmt_cfg.channel, 0, 0);
 }
 
-void LED::leds_on(Status status) {
-    switch (status) {
-        case TANK:
-            leds_on_rgb(0, 0, 255);
-            break;
-        case BATTERY:
+void LED::leds_on_ready() {
+    leds_on_rgb(0, 0, 255);
+}
+
+void LED::leds_on_low_battery() {
+    leds_on_rgb(255, 0, 0);
+}
+
+void LED::leds_on_controller_stale() {
+    long now = millis();
+        now /= 100;
+        if ((now % 10) < 8) {
             leds_on_rgb(255, 0, 0);
-            break;
-        case LOS:
-        default:
-            long now = millis();
-            now /= 100;
-            if ((now % 10) < 2) {
-                leds_on_rgb(255, 0, 0);
-            } else {
-                leds_off();
-            }
-            break;
-    }
+        } else {
+            leds_off();
+        }
+}
+
+void LED::leds_on_no_controller() {
+    long now = millis();
+        now /= 100;
+        if ((now % 10) < 2) {
+            leds_on_rgb(255, 0, 0);
+        } else {
+            leds_off();
+        }
 }
 
 void LED::leds_on_gradient(int color) {

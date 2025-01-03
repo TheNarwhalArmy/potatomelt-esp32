@@ -227,6 +227,7 @@
                 "C:\\Users\\Danielle\\AppData\\Local\\Arduino15\\packages\\esp32-bluepad32\\hardware\\esp32\\4.1.0\\tools\\sdk\\esp32s3\\qio_qspi\\include",
                 "C:\\Users\\Danielle\\AppData\\Local\\Arduino15\\packages\\esp32-bluepad32\\hardware\\esp32\\4.1.0\\cores\\esp32",
                 "C:\\Users\\Danielle\\AppData\\Local\\Arduino15\\packages\\esp32-bluepad32\\hardware\\esp32\\4.1.0\\variants\\adafruit_feather_esp32s3",
+                "C:\\Users\\Danielle\\AppData\\Local\\Arduino15\\packages\\esp32-bluepad32\\hardware\\esp32\\4.1.0\\libraries\\Preferences\\src",
                 "C:\\Users\\Danielle\\AppData\\Local\\Arduino15\\packages\\esp32-bluepad32\\hardware\\esp32\\4.1.0\\libraries\\Wire\\src",
                 "C:\\Users\\Danielle\\AppData\\Local\\Arduino15\\packages\\esp32-bluepad32\\hardware\\esp32\\4.1.0\\libraries\\SPI\\src",
                 "c:\\users\\danielle\\appdata\\local\\arduino15\\packages\\esp32\\tools\\xtensa-esp32s3-elf-gcc\\esp-2021r2-patch5-8.4.0\\xtensa-esp32s3-elf\\include\\c++\\8.4.0",

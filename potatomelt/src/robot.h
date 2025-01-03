@@ -6,9 +6,7 @@
 #include "melty_config.h"
 
 // The main struct shared by the robot side and the control side threads - contains the state of what we want the robot to do
-typedef struct control_parameters_t {
-    bool spin_enabled;                  // Authorization for the robot to spin
-    int translation_enabled;            // Authorization for the spinning bot to translate
+typedef struct spin_control_parameters_t {
     int throttle_percent;               // stores throttle
     int max_throttle_offset;            // In a rotation, the furthest from the base throttle setting that each motor should be spun
     unsigned long rotation_interval_us; // time for 1 rotation of robot
@@ -19,14 +17,29 @@ typedef struct control_parameters_t {
     int battery_percent;                // battery power remaining- where on the green->red slope we should be
 };
 
+typedef struct tank_control_parameters_t {
+    int translate_forback;
+    int turn_lr;
+};
+
+enum robot_status {
+    SPINNING,
+    READY,
+    LOW_BATTERY,
+    CONTROLLER_STALE,
+    NO_CONTROLLER
+};
+
 // And the parent Robot class
 class Robot {
     public:
         Robot();
-        void update_loop(control_parameters_t* params);
+        void update_loop(robot_status state, spin_control_parameters_t* spin_params, tank_control_parameters_t* tank_params);
         float get_z_buffer();
         void init();
     private:
+        void motors_stop();
+        void drive_tank(tank_control_parameters_t* params);
         unsigned long rotation_started_at_us;
         LED leds;
         Battery battery;

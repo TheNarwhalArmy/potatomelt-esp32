@@ -3,6 +3,24 @@
 
 // This file has all the hard-coded settings for Potatomelt
 
+// ------------ safety settings ----------------------
+#define CONTROL_UPDATE_TIMEOUT_MS 3000
+
+// ------------ control parameters -------------------
+#define CONTROL_TRANSLATE_DEADZONE 50
+#define CONTROL_SPIN_SPEED_DEADZONE 200
+#define CONTROL_THROTTLE_MINIMUM 500
+
+#define TANK_FORBACK_POWER_SCALE 0.02f // Scale the power waaaaay down on tank mode
+#define TANK_TURNING_POWER_SCALE 0.005f // because we're sitting on a pair of ungeared brushless motors
+
+// ------------- Controller button mappings ----------
+#define XBOX_DPAD_UP 0x01
+#define XBOX_DPAD_RIGHT 0x04
+#define XBOX_DPAD_DOWN 0x02
+#define XBOX_DPAD_LEFT 0x08
+#define XBOX_BUTTON_X 0x04
+
 // ------------ Pin and RMT Mappings -----------------
 
 #define NEOPIXEL_PIN GPIO_NUM_17
