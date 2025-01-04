@@ -10,6 +10,10 @@ class Accelerometer {
     private:
         LIS331ESP lis;
         int sample_count;
-        float summed_samples;
+        float summed_x_samples;
+        float summed_y_samples;
+        float summed_z_samples;
+        float x_offset;
+        float y_offset;
         float z_offset;
 };

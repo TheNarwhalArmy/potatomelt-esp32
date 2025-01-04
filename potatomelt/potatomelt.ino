@@ -40,6 +40,7 @@ void setup() {
 
     // start the robot subsystems
     robot.init();
+    state = NO_CONTROLLER;
 
     // start the control interface
     BP32.setup(&on_connected_controller, &on_disconnected_controller);
@@ -60,6 +61,9 @@ void setup() {
 // it calculates all the parameters needed for a single rotation (motor phases, LED timing, etc)
 void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
     float rpm = robot.get_rpm();
+
+    if (rpm == 0) rpm == 0.01f;
+
     pid_current_rpm = rpm;
     long rotation_us = (1.0f/rpm) * 60 * 1000 * 1000;
 
@@ -107,6 +111,8 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
 
     // todo - translation trim instead of just *1
     params->max_throttle_offset = c->translate_forback * params->throttle_perk * 1 / 1024;
+
+    params->battery_percent = robot.get_battery();
 }
 
 // Arduino loop function. Runs in CPU 1.
@@ -127,8 +133,8 @@ void loop() {
             throttle_pid.SetMode(AUTOMATIC);
         }
 
-        state = SPINNING;
         calculate_melty_params(&control_params, c);
+        state = SPINNING;
     } else {
         throttle_pid.SetMode(MANUAL);
         state = READY;

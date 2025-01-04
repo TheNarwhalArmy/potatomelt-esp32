@@ -3,8 +3,6 @@
 #include "accelerometer.h"
 #include "../lib/SparkFun_LIS331_ESP32.h"
 
-// todo - all axes zero-G offsets
-
 Accelerometer::Accelerometer() { }
 
 void Accelerometer::init(int addr) {
@@ -18,11 +16,17 @@ void Accelerometer::sample_offset() {
     int16_t x, y, z;
     lis.readAxes(x, y, z);
 
+    float xg = lis.convertToG(400, x);
+    float yg = lis.convertToG(400, y);
     float zg = lis.convertToG(400, z);
 
     sample_count++;
-    summed_samples += zg;
-    z_offset = summed_samples/sample_count - 1.0;
+    summed_x_samples += xg;
+    x_offset = summed_x_samples/sample_count;
+    summed_y_samples += yg;
+    y_offset = summed_y_samples/sample_count;
+    summed_z_samples += zg;
+    z_offset = summed_z_samples/sample_count - 1.0;
 }
 
 float Accelerometer::get_z_accel() {
@@ -35,8 +39,8 @@ float Accelerometer::get_z_accel() {
 float Accelerometer::get_xy_accel() {
     int16_t x, y, z;
     lis.readAxes(x, y, z);
-    float xg = lis.convertToG(400, x);
-    float yg = lis.convertToG(400, y);
+    float xg = lis.convertToG(400, x) - x_offset;
+    float yg = lis.convertToG(400, y) - y_offset;
 
     return sqrt(xg*xg + yg*yg);
 }

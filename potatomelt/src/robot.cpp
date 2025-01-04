@@ -71,13 +71,13 @@ void Robot::spin(spin_control_parameters_t* spin_params) {
     if (spin_params->led_start > spin_params->led_stop) {
     // the LED will be on across 0, so each loop we're shutting it off and then turning it on
     if (time_spent_this_rotation_us >= spin_params->led_start || time_spent_this_rotation_us <= spin_params->led_stop) {
-      leds.leds_on_gradient(battery.get_percent());
+      leds.leds_on_gradient(spin_params->battery_percent);
     } else {
       leds.leds_off();
     }
   } else {
     if (time_spent_this_rotation_us >= spin_params->led_start && time_spent_this_rotation_us <= spin_params->led_stop) {
-      leds.leds_on_gradient(battery.get_percent());
+      leds.leds_on_gradient(spin_params->battery_percent);
     } else {
       leds.leds_off();
     }
@@ -107,6 +107,10 @@ float Robot::get_z_buffer() {
 
 float Robot::get_rpm() {
     return imu.get_rpm();
+}
+
+int Robot::get_battery() {
+    return battery.get_percent();
 }
 
 void Robot::init() {

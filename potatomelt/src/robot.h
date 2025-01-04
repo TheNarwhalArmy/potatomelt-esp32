@@ -38,6 +38,7 @@ class Robot {
         float get_z_buffer();
         float get_rpm();
         void init();
+        int get_battery();
     private:
         void motors_stop();
         void drive_tank(tank_control_parameters_t* params);
