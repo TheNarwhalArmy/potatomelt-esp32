@@ -9,12 +9,17 @@
 typedef struct spin_control_parameters_t {
     int throttle_perk;               // stores throttle, out of 0-1000
     int max_throttle_offset;            // In a rotation, the furthest from the base throttle setting that each motor should be spun
-    unsigned long rotation_interval_us; // time for 1 rotation of robot
-    unsigned long led_start;            // offset for beginning of LED beacon
-    unsigned long led_stop;             // offset for end of LED beacon
-    unsigned long motor_start_phase_1;  // time offset for when motor 1 begins translating forwards
-    unsigned long motor_start_phase_2;  // time offset for when motor 2 begins translating forwards
+    long rotation_interval_us; // time for 1 rotation of robot
+    long led_start;            // offset for beginning of LED beacon
+    long led_stop;             // offset for end of LED beacon
+    long motor_start_phase_1;  // time offset for when motor 1 begins translating forwards
+    long motor_start_phase_2;  // time offset for when motor 2 begins translating forwards
     int battery_percent;                // battery power remaining- where on the green->red slope we should be
+
+    // troubleshooting...
+    float led_on_fraction;
+    long led_on_us;
+    long led_offset_us;
 };
 
 typedef struct tank_control_parameters_t {
@@ -39,6 +44,7 @@ class Robot {
         float get_rpm();
         void init();
         int get_battery();
+        void trim_accel(bool increase);
     private:
         void motors_stop();
         void drive_tank(tank_control_parameters_t* params);
@@ -46,7 +52,7 @@ class Robot {
         unsigned long rotation_started_at_us;
         LED leds;
         Battery battery;
-        IMU imu;
         DShotRMT motor1;
         DShotRMT motor2;
+        IMU imu;
 };

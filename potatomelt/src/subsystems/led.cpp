@@ -9,7 +9,7 @@ uint8_t pixel_color[6];
 LED::LED() {
     rmt_config_t rmt_cfg = RMT_DEFAULT_CONFIG_TX(NEOPIXEL_PIN, NEOPIXEL_RMT);
 
-    rmt_cfg.clk_div = 8; // theoretically, slow us down to 10mhz
+    rmt_cfg.clk_div = 8; // slow us down to 10mhz
 
     rmt_config(&rmt_cfg);
 

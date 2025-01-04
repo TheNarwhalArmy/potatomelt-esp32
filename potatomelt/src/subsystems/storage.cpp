@@ -18,3 +18,12 @@ int Storage::get_target_rpm() {
 void Storage::set_target_rpm(int tar) {
     preferences.putInt("target_rpm_index", tar);
 }
+
+float Storage::get_accel_correction() {
+    return preferences.getFloat("accel_correction", 1.0f);
+}
+        
+        
+void Storage::set_accel_correction(float corr) {
+    preferences.putFloat("accel_correction", corr);
+}

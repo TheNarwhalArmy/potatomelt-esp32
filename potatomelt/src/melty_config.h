@@ -7,7 +7,7 @@
 #define CONTROL_UPDATE_TIMEOUT_MS 3000
 
 // ------------ Spin control settings ----------------
-#define ACCELEROMETER_HARDWARE_RADIUS_CM 3.415
+#define ACCELEROMETER_HARDWARE_RADIUS_CM 3.415f
 #define LED_OFFSET_PERCENT 25
 
 #define LEFT_RIGHT_HEADING_CONTROL_DIVISOR 2.0f   // How quick steering while melting is (larger values = slower)

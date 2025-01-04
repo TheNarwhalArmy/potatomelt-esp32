@@ -8,7 +8,7 @@ float Battery::get_voltage() {
 }
 
 int Battery::get_percent() {
-    float battery_cell_volts = get_voltage() / BATTERY_CELL_COUNT;
-    int battery_percent = (int) (battery_cell_volts - BATTERY_CELL_EMPTY_VOLTAGE) * 100 / (BATTERY_CELL_FULL_VOLTAGE - BATTERY_CELL_EMPTY_VOLTAGE);
-    return battery_percent;
+    float battery_cell_volts = get_voltage() / (float) BATTERY_CELL_COUNT;
+    float battery_percent = (battery_cell_volts - BATTERY_CELL_EMPTY_VOLTAGE) * 100.0 / (BATTERY_CELL_FULL_VOLTAGE - BATTERY_CELL_EMPTY_VOLTAGE);
+    return max(0, min((int) battery_percent, 100));
 }

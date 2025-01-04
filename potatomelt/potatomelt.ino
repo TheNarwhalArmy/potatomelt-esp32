@@ -65,13 +65,13 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
     if (rpm == 0) rpm == 0.01f;
 
     pid_current_rpm = rpm;
+
+    // because by default we're spinning clockwise, right turns = longer rotations = less RPM
+    float rpm_adjustment_factor = c->turn_lr / 1024.0 / LEFT_RIGHT_HEADING_CONTROL_DIVISOR;
+
+    rpm -= rpm*rpm_adjustment_factor;
+
     long rotation_us = (1.0f/rpm) * 60 * 1000 * 1000;
-
-    // because by default we're spinning clockwise, right turns = extending the rotation interval
-    // Fortunately for us, on the xbox, stick right = positive values, while stick left = negative
-    float rpm_adjustment_factor = c->turn_lr / LEFT_RIGHT_HEADING_CONTROL_DIVISOR;
-
-    rotation_us += (long) rotation_us*rpm_adjustment_factor/LEFT_RIGHT_HEADING_CONTROL_DIVISOR;
 
     // if we're too slow, don't even try to track heading
     if (rotation_us > MAX_TRACKING_ROTATION_INTERVAL_US) {
@@ -85,16 +85,18 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
     if (led_on_portion < 0.10f) led_on_portion = 0.10f;
     if (led_on_portion > 0.90f) led_on_portion = 0.90f;
 
-    unsigned long led_on_us = led_on_portion * rotation_us;
-    unsigned long led_offset_us = LED_OFFSET_PERCENT * rotation_us;
+    params->led_on_fraction = led_on_portion;
+
+    params->led_on_us = (long) (led_on_portion * rotation_us);
+    params->led_offset_us = (long) (LED_OFFSET_PERCENT * rotation_us / 100);
 
     // starts LED on time at point in rotation so it's "centered" on led offset
-    params->led_start = led_offset_us - (led_on_us / 2);
+    params->led_start = params->led_offset_us - (params->led_on_us / 2);
     if (params->led_start < 0) {
         params->led_start += rotation_us;
     }
     
-    params->led_stop = params->led_start + led_on_us;
+    params->led_stop = params->led_start + params->led_on_us;
     if (params->led_stop > rotation_us)
     {
         params->led_stop -= rotation_us;
@@ -116,6 +118,7 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
 }
 
 // Arduino loop function. Runs in CPU 1.
+// todo - low-battery state
 void loop() {
     BP32.update();
 
@@ -143,8 +146,17 @@ void loop() {
         tank_params.turn_lr = c->turn_lr;
     }
 
+    if (c->trim_right) {
+        robot.trim_accel(true);
+    }
+
+    if (c->trim_left) {
+        robot.trim_accel(false);
+    }
+
     if (millis() - last_logged_at > 500) {
-        Serial.printf("Controller state: connected: %d alive: %d spin: %d vThrottle: %d \n", c->connected, c->alive, c->spin_requested, c->target_rpm);
+        Serial.printf("Controller: connected: %d alive: %d spin: %d vThrottle: %d | battery: %d \n", c->connected, c->alive, c->spin_requested, c->target_rpm, robot.get_battery());
+        Serial.printf("melty params: spin_duration %d LED center %d LED length %d LED start %d LED stop %d LED fraction %f \n", control_params.rotation_interval_us, control_params.led_offset_us, control_params.led_on_us, control_params.led_start, control_params.led_stop, control_params.led_on_fraction);
         last_logged_at = millis();
     }
 
