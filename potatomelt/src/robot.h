@@ -15,11 +15,6 @@ typedef struct spin_control_parameters_t {
     long motor_start_phase_1;  // time offset for when motor 1 begins translating forwards
     long motor_start_phase_2;  // time offset for when motor 2 begins translating forwards
     int battery_percent;                // battery power remaining- where on the green->red slope we should be
-
-    // troubleshooting...
-    float led_on_fraction;
-    long led_on_us;
-    long led_offset_us;
 };
 
 typedef struct tank_control_parameters_t {
@@ -45,6 +40,7 @@ class Robot {
         void init();
         int get_battery();
         void trim_accel(bool increase);
+        float get_accel_trim();
     private:
         void motors_stop();
         void drive_tank(tank_control_parameters_t* params);

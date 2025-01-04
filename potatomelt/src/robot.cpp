@@ -117,6 +117,10 @@ void Robot::trim_accel(bool increase) {
   imu.trim(increase);
 }
 
+float Robot::get_accel_trim() {
+  return imu.get_trim();
+}
+
 void Robot::init() {
     imu.init();
     motor1.begin(DSHOT300);

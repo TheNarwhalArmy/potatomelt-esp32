@@ -8,7 +8,7 @@
 
 // ------------ Spin control settings ----------------
 #define ACCELEROMETER_HARDWARE_RADIUS_CM 3.415f
-#define LED_OFFSET_PERCENT 25
+#define LED_OFFSET_PERCENT 50
 
 #define LEFT_RIGHT_HEADING_CONTROL_DIVISOR 2.0f   // How quick steering while melting is (larger values = slower)
 #define MIN_TRANSLATION_RPM 400

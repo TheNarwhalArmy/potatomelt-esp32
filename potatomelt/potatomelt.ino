@@ -85,18 +85,18 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
     if (led_on_portion < 0.10f) led_on_portion = 0.10f;
     if (led_on_portion > 0.90f) led_on_portion = 0.90f;
 
-    params->led_on_fraction = led_on_portion;
+    double led_on_fraction = led_on_portion;
 
-    params->led_on_us = (long) (led_on_portion * rotation_us);
-    params->led_offset_us = (long) (LED_OFFSET_PERCENT * rotation_us / 100);
+    double led_on_us = (long) (led_on_portion * rotation_us);
+    double led_offset_us = (long) (LED_OFFSET_PERCENT * rotation_us / 100);
 
     // starts LED on time at point in rotation so it's "centered" on led offset
-    params->led_start = params->led_offset_us - (params->led_on_us / 2);
+    params->led_start = led_offset_us - (led_on_us / 2);
     if (params->led_start < 0) {
         params->led_start += rotation_us;
     }
     
-    params->led_stop = params->led_start + params->led_on_us;
+    params->led_stop = params->led_start + led_on_us;
     if (params->led_stop > rotation_us)
     {
         params->led_stop -= rotation_us;
@@ -155,8 +155,7 @@ void loop() {
     }
 
     if (millis() - last_logged_at > 500) {
-        Serial.printf("Controller: connected: %d alive: %d spin: %d vThrottle: %d | battery: %d \n", c->connected, c->alive, c->spin_requested, c->target_rpm, robot.get_battery());
-        Serial.printf("melty params: spin_duration %d LED center %d LED length %d LED start %d LED stop %d LED fraction %f \n", control_params.rotation_interval_us, control_params.led_offset_us, control_params.led_on_us, control_params.led_start, control_params.led_stop, control_params.led_on_fraction);
+        Serial.printf("Controller: connected: %d alive: %d spin: %d vThrottle: %d | battery: %d | IMU correction %f \n", c->connected, c->alive, c->spin_requested, c->target_rpm, robot.get_battery(), robot.get_accel_trim());
         last_logged_at = millis();
     }
 

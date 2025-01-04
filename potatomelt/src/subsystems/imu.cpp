@@ -51,7 +51,7 @@ bool IMU::get_inverted() {
 }
 
 void IMU::trim(bool increase) {
-    accel_correction_factor *= (increase) ? 1.05 : (1.0/1.05);
+    accel_correction_factor *= ((increase) ? 1.001 : (1.0/1.001));
     store.set_accel_correction(accel_correction_factor);
 }
 
@@ -74,4 +74,8 @@ float IMU::get_accel_1_g() {
 
 float IMU::get_accel_2_g() {
     return lis2.get_xy_accel();
+}
+
+float IMU::get_trim() {
+    return accel_correction_factor;
 }
