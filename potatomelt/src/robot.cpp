@@ -33,7 +33,55 @@ void Robot::update_loop(robot_status state, spin_control_parameters_t* spin_para
         case READY:
             leds.leds_on_ready();
             drive_tank(tank_params);
+            break;
+        case SPINNING:
+            spin(spin_params);
     }
+}
+
+void Robot::spin(spin_control_parameters_t* spin_params) {
+    long time_spent_this_rotation_us = micros() - rotation_started_at_us;
+
+    if (time_spent_this_rotation_us > spin_params->rotation_interval_us) {
+        time_spent_this_rotation_us -= spin_params->rotation_interval_us;
+        rotation_started_at_us += spin_params->rotation_interval_us;
+    }
+
+    double throttle_offset = 0;
+
+    // translation math time - first, how far into this phase of rotation are we?
+    long micros_into_phase = time_spent_this_rotation_us % (spin_params->rotation_interval_us/2);
+    float phase_progress = 2.0 * micros_into_phase / (spin_params->rotation_interval_us);
+
+    // What does that mean the sine (approximation) of that distance into the phase is?
+    // Using a parabolic approximation of half a sine wave, that goes from Y=0 to 1 and back in the range X=0..1
+    float phase_offset_fraction = -4 * phase_progress * (phase_progress - 1);
+
+    throttle_offset = (double) (phase_offset_fraction * spin_params->max_throttle_offset);
+
+    if (time_spent_this_rotation_us >= spin_params->motor_start_phase_1 && time_spent_this_rotation_us <= spin_params->motor_start_phase_2) {
+        motor1.sendThrottleValue(perk2dshot(spin_params->throttle_perk + throttle_offset));
+        motor2.sendThrottleValue(perk2dshot(spin_params->throttle_perk - throttle_offset));
+    } else {
+        motor1.sendThrottleValue(perk2dshot(spin_params->throttle_perk - throttle_offset));
+        motor2.sendThrottleValue(perk2dshot(spin_params->throttle_perk + throttle_offset));
+    }
+   
+    // displays heading LED at correct location
+    if (spin_params->led_start > spin_params->led_stop) {
+    // the LED will be on across 0, so each loop we're shutting it off and then turning it on
+    if (time_spent_this_rotation_us >= spin_params->led_start || time_spent_this_rotation_us <= spin_params->led_stop) {
+      leds.leds_on_gradient(battery.get_percent());
+    } else {
+      leds.leds_off();
+    }
+  } else {
+    if (time_spent_this_rotation_us >= spin_params->led_start && time_spent_this_rotation_us <= spin_params->led_stop) {
+      leds.leds_on_gradient(battery.get_percent());
+    } else {
+      leds.leds_off();
+    }
+  }
 }
 
 void Robot::motors_stop() {
@@ -55,6 +103,10 @@ void Robot::drive_tank(tank_control_parameters_t* params) {
 
 float Robot::get_z_buffer() {
     return imu.z_accel_buffer;
+}
+
+float Robot::get_rpm() {
+    return imu.get_rpm();
 }
 
 void Robot::init() {

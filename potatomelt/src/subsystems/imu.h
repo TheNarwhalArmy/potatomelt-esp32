@@ -1,7 +1,7 @@
 class IMU {
     public:
         IMU();
-        int get_rpm();
+        float get_rpm();
         bool get_inverted();
         void poll();
         void init();

@@ -6,6 +6,17 @@
 // ------------ safety settings ----------------------
 #define CONTROL_UPDATE_TIMEOUT_MS 3000
 
+// ------------ Spin control settings ----------------
+#define ACCELEROMETER_HARDWARE_RADIUS_CM 3.415
+#define LED_OFFSET_PERCENT 25
+
+#define LEFT_RIGHT_HEADING_CONTROL_DIVISOR 2.0f   // How quick steering while melting is (larger values = slower)
+#define MIN_TRANSLATION_RPM 400
+#define MAX_TRANSLATION_ROTATION_INTERVAL_US (1.0f / MIN_TRANSLATION_RPM) * 60 * 1000 * 1000
+#define MAX_TRACKING_ROTATION_INTERVAL_US MAX_TRANSLATION_ROTATION_INTERVAL_US * 2   // don't track heading if we are this slow (also puts upper limit on time spent in melty loop for safety)
+
+#define MAX_TRACKING_RPM 3000;
+
 // ------------ control parameters -------------------
 #define CONTROL_TRANSLATE_DEADZONE 50
 #define CONTROL_SPIN_SPEED_DEADZONE 200
@@ -14,7 +25,14 @@
 #define TANK_FORBACK_POWER_SCALE 0.02f // Scale the power waaaaay down on tank mode
 #define TANK_TURNING_POWER_SCALE 0.005f // because we're sitting on a pair of ungeared brushless motors
 
-// ------------- Controller button mappings ----------
+// ------------ PID tuning ---------------------------
+// Tuning PIDs is an art. See: https://pidexplained.com/how-to-tune-a-pid-controller/
+
+#define PID_KP 1.0                                  // Proportional Gain - higher values give more sensitivity, lower values give more stability
+#define PID_KI 0.4                                  // Integral - damping on the rebound curves. Lower values = slower to respond, but less bounces
+#define PID_KD 0.0                                  // Derivative - useful to prevent overshoot of target value.
+
+// ------------- controller button mappings ----------
 #define XBOX_DPAD_UP 0x01
 #define XBOX_DPAD_RIGHT 0x04
 #define XBOX_DPAD_DOWN 0x02

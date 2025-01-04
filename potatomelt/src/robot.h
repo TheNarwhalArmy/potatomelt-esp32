@@ -7,7 +7,7 @@
 
 // The main struct shared by the robot side and the control side threads - contains the state of what we want the robot to do
 typedef struct spin_control_parameters_t {
-    int throttle_percent;               // stores throttle
+    int throttle_perk;               // stores throttle, out of 0-1000
     int max_throttle_offset;            // In a rotation, the furthest from the base throttle setting that each motor should be spun
     unsigned long rotation_interval_us; // time for 1 rotation of robot
     unsigned long led_start;            // offset for beginning of LED beacon
@@ -36,10 +36,12 @@ class Robot {
         Robot();
         void update_loop(robot_status state, spin_control_parameters_t* spin_params, tank_control_parameters_t* tank_params);
         float get_z_buffer();
+        float get_rpm();
         void init();
     private:
         void motors_stop();
         void drive_tank(tank_control_parameters_t* params);
+        void spin(spin_control_parameters_t* params);
         unsigned long rotation_started_at_us;
         LED leds;
         Battery battery;
