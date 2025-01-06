@@ -149,11 +149,11 @@ void loop() {
     }
 
     if (c->trim_right) {
-        robot.trim_accel(true, c->target_rpm);
+        robot.trim_accel(false, c->target_rpm);
     }
 
     if (c->trim_left) {
-        robot.trim_accel(false, c->target_rpm);
+        robot.trim_accel(true, c->target_rpm);
     }
 
     if (millis() - last_logged_at > 500) {

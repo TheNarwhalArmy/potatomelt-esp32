@@ -57,7 +57,7 @@ void IMU::get_accel_correction(int target_rpm) {
 }
 
 void IMU::trim(bool increase, int target_rpm) {
-    accel_correction_factor *= ((increase) ? 1.001 : (1.0/1.001));
+    accel_correction_factor *= ((increase) ? 1.005 : (1.0/1.005));
     get_active_store()->set_accel_correction(target_rpm, accel_correction_factor);
 }
 
