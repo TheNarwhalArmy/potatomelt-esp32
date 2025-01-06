@@ -14,6 +14,8 @@ robot_status state;
 spin_control_parameters_t control_params;
 tank_control_parameters_t tank_params;
 
+Storage store;
+
 long last_logged_at = 0;
 
 // Variables for the PID - it doesn't take args directly, just gets pointers to these
@@ -35,8 +37,8 @@ void setup() {
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
     Wire.setClock(400000);
 
-    // init storage
-    get_active_store().init();
+    // start data storage and recall
+    store.init();
 
     // start the robot subsystems
     robot.init();
@@ -60,7 +62,7 @@ void setup() {
 // This function is the core of the control loop
 // it calculates all the parameters needed for a single rotation (motor phases, LED timing, etc)
 void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
-    float rpm = robot.get_rpm();
+    float rpm = robot.get_rpm(c->target_rpm);
 
     if (rpm == 0) rpm == 0.01f;
 
@@ -120,9 +122,9 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
 // Arduino loop function. Runs in CPU 1.
 // todo - low-battery state
 void loop() {
-    BP32.update();
+    bool upd8 = BP32.update();
 
-    ctrl_state* c = ctrl_update();
+    ctrl_state* c = ctrl_update(upd8); 
 
     if (!c->connected) {
         throttle_pid.SetMode(MANUAL);
@@ -147,15 +149,15 @@ void loop() {
     }
 
     if (c->trim_right) {
-        robot.trim_accel(true);
+        robot.trim_accel(true, c->target_rpm);
     }
 
     if (c->trim_left) {
-        robot.trim_accel(false);
+        robot.trim_accel(false, c->target_rpm);
     }
 
     if (millis() - last_logged_at > 500) {
-        Serial.printf("Controller: connected: %d alive: %d spin: %d vThrottle: %d | battery: %d | IMU correction %f \n", c->connected, c->alive, c->spin_requested, c->target_rpm, robot.get_battery(), robot.get_accel_trim());
+        Serial.printf("Controller: connected: %d alive: %d spin: %d vThrottle: %d | battery: %d | IMU correction %f \n", c->connected, c->alive, c->spin_requested, c->target_rpm, robot.get_battery(), robot.get_accel_trim(c->target_rpm));
         last_logged_at = millis();
     }
 

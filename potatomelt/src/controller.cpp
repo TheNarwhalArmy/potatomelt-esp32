@@ -10,7 +10,7 @@ ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 // todo - save the trims & spin speed
 // todo - work out how to get these into melty_config.h properly
 int spin_target_rpms[] =  {600, 800, 1000, 1200, 1500, 1800, 2100, 2500, 3000};
-#define NUM_TARGET_RPMS 8
+#define NUM_TARGET_RPMS 9
 int target_rpm_index = 3;
 
 bool reverse_spin = false;
@@ -28,14 +28,16 @@ ctrl_state* previous_ctrls = &state_green;
 ctrl_state* new_ctrls = &state_blue;
 bool prev_ctrls_are_green = true;
 
-ctrl_state* ctrl_update() {
+ctrl_state* ctrl_update(bool upd8) {
     long now = millis();
 
-    for (auto myController : myControllers) {
-        if (myController && myController->isConnected() && myController->hasData()) {
-            // create a new control state
-            last_updated_millis = now;
-            return get_state(myController);
+    if (upd8) {
+        for (auto myController : myControllers) {
+            if (myController && myController->isConnected() && myController->hasData()) {
+                // create a new control state
+                last_updated_millis = now;
+                return get_state(myController);
+            }
         }
     }
 
@@ -85,20 +87,20 @@ ctrl_state* get_state(ControllerPtr ctl) {
     // target RPM adjustment
     // forward on the xbox controller gives negative values, for some reason
     // todo - make this only adjust while spinning?
-    int throttle = ctl->axisY();
+    int lstick = ctl->axisY();
 
-    if ((abs(throttle) > CONTROL_SPIN_SPEED_DEADZONE) && !previous_state.spin_target_rpm_changed) {
+    if ((abs(lstick) > CONTROL_SPIN_SPEED_DEADZONE) && !previous_state.spin_target_rpm_changed) {
         // we've just gone past the threshold to change the target spin speed
         previous_state.spin_target_rpm_changed = true;
-        if (throttle < 0 && target_rpm_index < NUM_TARGET_RPMS) {
+        if (lstick < 0 && target_rpm_index < NUM_TARGET_RPMS-1) {
             target_rpm_index++;
-        } else if (throttle > 0 && target_rpm_index > 0) {
+        } else if (lstick > 0 && target_rpm_index > 0) {
             target_rpm_index--;
         }
 
-        get_active_store().set_target_rpm(target_rpm_index);
+        get_active_store()->set_target_rpm(target_rpm_index);
 
-    } else if ((abs(throttle) < CONTROL_SPIN_SPEED_DEADZONE) && previous_state.spin_target_rpm_changed) {
+    } else if ((abs(lstick) < CONTROL_SPIN_SPEED_DEADZONE) && previous_state.spin_target_rpm_changed) {
         // we've just dropped back beneath the threshold, reset the ability to change speed
         previous_state.spin_target_rpm_changed = false;
     }
@@ -108,6 +110,11 @@ ctrl_state* get_state(ControllerPtr ctl) {
     // And the trim adjustments
     // todo - save trim into config in appropriate places (trim- IMU. translate - ???)
     int dpad = ctl->dpad();
+
+    new_ctrls->increase_translate = false;
+    new_ctrls->decrease_translate = false;
+    new_ctrls->trim_left = false;
+    new_ctrls->trim_right = false;
 
     // trim config, from the dpad
     if ((dpad & XBOX_DPAD_UP) != previous_state.increase_translate_pressed) {
@@ -153,7 +160,7 @@ ctrl_state* get_state(ControllerPtr ctl) {
 }
 
 void ctrl_init() {
-    target_rpm_index = get_active_store().get_target_rpm();
+    target_rpm_index = get_active_store()->get_target_rpm();
 }
 
 void on_connected_controller(ControllerPtr ctl) {

@@ -36,11 +36,11 @@ class Robot {
         Robot();
         void update_loop(robot_status state, spin_control_parameters_t* spin_params, tank_control_parameters_t* tank_params);
         float get_z_buffer();
-        float get_rpm();
+        float get_rpm(int target_rpm);
         void init();
         int get_battery();
-        void trim_accel(bool increase);
-        float get_accel_trim();
+        void trim_accel(bool increase, int target_rpm);
+        float get_accel_trim(int target_rpm);
     private:
         void motors_stop();
         void drive_tank(tank_control_parameters_t* params);

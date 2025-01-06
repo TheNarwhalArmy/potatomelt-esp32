@@ -8,8 +8,6 @@
 Accelerometer lis1;
 Accelerometer lis2;
 
-Storage store;
-
 float accel_correction_factor = 1.0;
 
 // todo - spin trim per-RPM
@@ -20,8 +18,6 @@ IMU::IMU() {
 void IMU::init() {
     lis1.init(0x18);
     lis2.init(0x19);
-    store = get_active_store();
-    accel_correction_factor = store.get_accel_correction();
 
     delay(20); // short pause for accelerometer warmup - we get weird results if we just dive right in
     set_z_offset();
@@ -50,12 +46,27 @@ bool IMU::get_inverted() {
     return z_accel_buffer < 0.0;
 }
 
-void IMU::trim(bool increase) {
-    accel_correction_factor *= ((increase) ? 1.001 : (1.0/1.001));
-    store.set_accel_correction(accel_correction_factor);
+void IMU::get_accel_correction(int target_rpm) {
+    float new_corr_factor = get_active_store()->get_accel_correction(target_rpm);
+
+    if (new_corr_factor > 0.0f) {
+        accel_correction_factor = new_corr_factor;
+    } else {
+        get_active_store()->set_accel_correction(target_rpm, accel_correction_factor);
+    }
 }
 
-float IMU::get_rpm() {
+void IMU::trim(bool increase, int target_rpm) {
+    accel_correction_factor *= ((increase) ? 1.001 : (1.0/1.001));
+    get_active_store()->set_accel_correction(target_rpm, accel_correction_factor);
+}
+
+float IMU::get_rpm(int target_rpm) {
+    if (target_rpm != current_target_rpm) {
+        current_target_rpm = target_rpm;
+        get_accel_correction(target_rpm);
+    }
+
     float lis1_g = lis1.get_xy_accel();
     float lis2_g = lis2.get_xy_accel();
 
@@ -76,6 +87,6 @@ float IMU::get_accel_2_g() {
     return lis2.get_xy_accel();
 }
 
-float IMU::get_trim() {
+float IMU::get_trim(int target_rpm) {
     return accel_correction_factor;
 }

@@ -105,20 +105,20 @@ float Robot::get_z_buffer() {
     return imu.z_accel_buffer;
 }
 
-float Robot::get_rpm() {
-    return imu.get_rpm();
+float Robot::get_rpm(int target_rpm) {
+    return imu.get_rpm(target_rpm);
 }
 
 int Robot::get_battery() {
     return battery.get_percent();
 }
 
-void Robot::trim_accel(bool increase) {
-  imu.trim(increase);
+void Robot::trim_accel(bool increase, int target_rpm) {
+  imu.trim(increase, target_rpm);
 }
 
-float Robot::get_accel_trim() {
-  return imu.get_trim();
+float Robot::get_accel_trim(int target_rpm) {
+  return imu.get_trim(target_rpm);
 }
 
 void Robot::init() {

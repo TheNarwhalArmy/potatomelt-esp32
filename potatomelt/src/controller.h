@@ -31,6 +31,7 @@ typedef struct prev_state {
     bool trim_left_pressed;
     bool trim_right_pressed;
     bool spin_target_rpm_changed;
+    long last_trim_at;
 };
 
 void ctrl_init();
@@ -42,6 +43,6 @@ void on_disconnected_controller(ControllerPtr ctr);
 // and what we all came here for, the controller interface functions
 // update() should be called regardless of if there's been a controller update or not
 bool is_connected();
-ctrl_state* ctrl_update();
+ctrl_state* ctrl_update(bool upd8);
 ctrl_state* get_state(ControllerPtr ctl);
 // todo - vibrate the controller on big hits? That'd be cute.

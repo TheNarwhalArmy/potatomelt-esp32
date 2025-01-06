@@ -11,9 +11,8 @@
 #define LED_OFFSET_PERCENT 47
 
 #define LEFT_RIGHT_HEADING_CONTROL_DIVISOR 2.0f   // How quick steering while melting is (larger values = slower)
-#define MIN_TRANSLATION_RPM 400
-#define MAX_TRANSLATION_ROTATION_INTERVAL_US (1.0f / MIN_TRANSLATION_RPM) * 60 * 1000 * 1000
-#define MAX_TRACKING_ROTATION_INTERVAL_US MAX_TRANSLATION_ROTATION_INTERVAL_US * 2   // don't track heading if we are this slow (also puts upper limit on time spent in melty loop for safety)
+#define MIN_TRACKING_RPM 400
+#define MAX_TRACKING_ROTATION_INTERVAL_US (1.0f / MIN_TRACKING_RPM) * 60 * 1000 * 1000 // don't track heading if we are this slow (also puts upper limit on time spent in melty loop for safety)
 
 #define MAX_TRACKING_RPM 3000;
 
