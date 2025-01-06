@@ -28,3 +28,11 @@ Drawing arcs, green fading to red: Spinning, displaying battery charge
 ## Just In Case
 
 The arduino project build directory on Windows defaults to: C:\Users\{user}\AppData\Local\Temp\arduino\sketches
+
+# Credits
+
+With apologies to my reviewers:
+Tomash and IrregularJoe
+
+And thanks to those who have contributed and inspired:
+NothingLabs, BlackCatMaxy, Robert K, and Mew

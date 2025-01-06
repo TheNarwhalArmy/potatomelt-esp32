@@ -64,9 +64,12 @@ void setup() {
 void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
     float rpm = robot.get_rpm(c->target_rpm);
 
-    if (rpm == 0) rpm == 0.01f;
-
+    // don't lie to the PID
     pid_current_rpm = rpm;
+
+    // but for the rest of the math, we're going to insist that we're spinning at least so fast
+    // this puts a limit on the amount of time we'll spend in a single rotation
+    rpm = max(rpm, (float) MIN_TRACKING_RPM);
 
     // because by default we're spinning clockwise, right turns = longer rotations = less RPM
     float rpm_adjustment_factor = c->turn_lr / 1024.0 / LEFT_RIGHT_HEADING_CONTROL_DIVISOR;
@@ -74,11 +77,6 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
     rpm -= rpm*rpm_adjustment_factor;
 
     long rotation_us = (1.0f/rpm) * 60 * 1000 * 1000;
-
-    // if we're too slow, don't even try to track heading
-    if (rotation_us > MAX_TRACKING_ROTATION_INTERVAL_US) {
-        rotation_us = MAX_TRACKING_ROTATION_INTERVAL_US;
-    }
 
     params->rotation_interval_us = rotation_us;
 
