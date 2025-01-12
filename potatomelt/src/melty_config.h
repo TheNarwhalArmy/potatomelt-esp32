@@ -8,6 +8,7 @@
 
 // ------------ Spin control settings ----------------
 #define ACCELEROMETER_HARDWARE_RADIUS_CM 3.415f
+// Beetle-tato distance: 5.13f
 #define LED_OFFSET_PERCENT 47
 
 #define LEFT_RIGHT_HEADING_CONTROL_DIVISOR 2.0f   // How quick steering while melting is (larger values = slower)
@@ -58,6 +59,7 @@
 #define BATTERY_CRIT_HALT_ENABLED                 // if enabled - robot will halt when battery voltage is critically low
 #define BATTERY_VOLTAGE_DIVIDER 8.24              // From the PCB - what's the voltage divider betweeen the battery + and the sense line?
 #define BATTERY_CELL_COUNT 3                      // How many cells are in the battery?
+// Beetle-tato count: 4
 #define BATTERY_CELL_FULL_VOLTAGE 4.2             // What voltage is a fully-charged cell? Standard lipos are 4.2v, other chemistries will vary
 #define BATTERY_CELL_EMPTY_VOLTAGE 3.2            // And on the other hand, what voltage is an empty cell? We're going to cut off at 3.2v/cell
 #define LOW_BAT_REPEAT_READS_BEFORE_ALARM 20      // Requires this many ADC reads below threshold before halting the robot
