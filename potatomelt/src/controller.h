@@ -15,10 +15,10 @@ typedef struct ctrl_state {
     bool reverse_spin; // toggle, stays true between presses of the command button
     int target_rpm; // this may stay high even if spin_requested is false!
 
+    float translate_trim;
+
     // and parameter tweaking
     // all of these are edge detectors, they'll go true once when the button is pressed and then drop back to false
-    bool increase_translate;
-    bool decrease_translate;
     bool trim_left;
     bool trim_right;
 };
