@@ -10,8 +10,12 @@ ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 // todo - save the trims & spin speed
 // todo - work out how to get these into melty_config.h properly
 int spin_target_rpms[] =  {600, 800, 1000, 1200, 1500, 1800, 2100, 2500, 3000};
+float translation_trims[] = {1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2, 10.0};
 #define NUM_TARGET_RPMS 9
 int target_rpm_index = 3;
+
+#define NUM_TRANS_TRIMS 13;
+int target_trans_trim = 4;
 
 bool reverse_spin = false;
 bool connected = false;
@@ -45,8 +49,6 @@ ctrl_state* ctrl_update(bool upd8) {
     previous_ctrls->connected = connected;
 
     // reset all the config buttons
-    previous_ctrls->decrease_translate = false;
-    previous_ctrls->increase_translate = false;
     previous_ctrls->trim_left = false;
     previous_ctrls->trim_right = false;
 
@@ -111,25 +113,27 @@ ctrl_state* get_state(ControllerPtr ctl) {
     // todo - save trim into config in appropriate places (trim- IMU. translate - ???)
     int dpad = ctl->dpad();
 
-    new_ctrls->increase_translate = false;
-    new_ctrls->decrease_translate = false;
     new_ctrls->trim_left = false;
     new_ctrls->trim_right = false;
 
     // trim config, from the dpad
     if ((dpad & XBOX_DPAD_UP) != previous_state.increase_translate_pressed) {
         previous_state.increase_translate_pressed = !previous_state.increase_translate_pressed;
-        if (previous_state.increase_translate_pressed) {
-            new_ctrls->increase_translate = true;
+        if (previous_state.increase_translate_pressed && target_trans_trim < NUM_TRANS_TRIMS-1) {
+            target_trans_trim++;
+            get_active_store()->set_trans_trim(target_trans_trim);
         }
     }
 
     if ((dpad & XBOX_DPAD_DOWN) != previous_state.decrease_translate_pressed) {
         previous_state.decrease_translate_pressed = !previous_state.decrease_translate_pressed;
-        if (previous_state.decrease_translate_pressed) {
-            new_ctrls->decrease_translate = true;
+        if (previous_state.decrease_translate_pressed && target_trans_trim > 0) {
+            target_trans_trim--;
+            get_active_store()->set_trans_trim(target_trans_trim);
         }
     }
+
+    new_ctrls->translate_trim = translation_trims[target_trans_trim];
 
     if ((dpad & XBOX_DPAD_LEFT) != previous_state.trim_left_pressed) {
         previous_state.trim_left_pressed = !previous_state.trim_left_pressed;
@@ -161,6 +165,7 @@ ctrl_state* get_state(ControllerPtr ctl) {
 
 void ctrl_init() {
     target_rpm_index = get_active_store()->get_target_rpm();
+    target_trans_trim = get_active_store()->get_trans_trim();
 }
 
 void on_connected_controller(ControllerPtr ctl) {

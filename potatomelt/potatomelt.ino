@@ -114,8 +114,7 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
     throttle_pid.Compute();
     params->throttle_perk = (int) pid_throttle_output;
 
-    // todo - translation trim instead of just *1
-    params->max_throttle_offset = c->translate_forback * params->throttle_perk * 1 / 1024;
+    params->max_throttle_offset = (int) c->translate_forback * params->throttle_perk * c->translate_trim / 1024;
 
     params->battery_percent = robot.get_battery();
 }
