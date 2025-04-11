@@ -40,6 +40,9 @@ void setup() {
     // start data storage and recall
     store.init();
 
+    // Configure the PID
+    throttle_pid.SetOutputLimits(0.0, 1023.0);
+
     // start the robot subsystems
     robot.init();
     state = NO_CONTROLLER;
