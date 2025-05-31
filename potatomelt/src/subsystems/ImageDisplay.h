@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "SPIFFS.h"
-#include "../lib/FastLED/FastLED.h" // Adjusted path
+#include <FastLED.h> // Adjusted path
 #include "../melty_config.h"       // For NUM_LEDS
 
 // Forward declaration if Pngle types were used directly in headers
