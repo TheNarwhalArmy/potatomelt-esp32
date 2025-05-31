@@ -1,6 +1,6 @@
 #include "ImageDisplay.h"
 #include "../melty_config.h" // For NUM_LEDS
-#include "../lib/pngle/pngle.h"  // For Pngle library
+#include <pngle.h>  // For Pngle library
 
 // Constructor
 ImageDisplay::ImageDisplay() {
