@@ -1,5 +1,5 @@
 #include "../melty_config.h"
-#include <FastLED.h> // For CRGB and FastLED control
+#include <FastLED.h>                // Standard include path
 
 class LED {
     public:
