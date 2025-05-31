@@ -21,6 +21,9 @@ typedef struct ctrl_state {
     // all of these are edge detectors, they'll go true once when the button is pressed and then drop back to false
     bool trim_left;
     bool trim_right;
+
+    // Button states (true if pressed)
+    bool y_button_pressed;
 };
 
 typedef struct prev_state {

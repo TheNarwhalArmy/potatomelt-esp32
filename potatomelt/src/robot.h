@@ -5,6 +5,8 @@
 #include "lib/DShotRMT.h"
 #include "melty_config.h"
 
+class ImageDisplay; // Forward declaration
+
 // The main struct shared by the robot side and the control side threads - contains the state of what we want the robot to do
 typedef struct spin_control_parameters_t {
     int throttle_perk;               // stores throttle, out of 0-1000
@@ -34,7 +36,7 @@ enum robot_status {
 class Robot {
     public:
         Robot();
-        void update_loop(robot_status state, spin_control_parameters_t* spin_params, tank_control_parameters_t* tank_params);
+        void update_loop(robot_status state, spin_control_parameters_t* spin_params, tank_control_parameters_t* tank_params, bool image_mode_active, ImageDisplay* img_display);
         float get_z_buffer();
         float get_rpm(int target_rpm);
         void init();
@@ -44,7 +46,7 @@ class Robot {
     private:
         void motors_stop();
         void drive_tank(tank_control_parameters_t* params);
-        void spin(spin_control_parameters_t* params);
+        void spin(spin_control_parameters_t* params, bool image_mode_active, ImageDisplay* img_display);
         unsigned long rotation_started_at_us;
         LED leds;
         Battery battery;

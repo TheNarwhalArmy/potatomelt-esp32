@@ -51,6 +51,7 @@ ctrl_state* ctrl_update(bool upd8) {
     // reset all the config buttons
     previous_ctrls->trim_left = false;
     previous_ctrls->trim_right = false;
+    previous_ctrls->y_button_pressed = false; // Reset Y button state
 
     // and check for control timeout
     if (now - last_updated_millis > CONTROL_UPDATE_TIMEOUT_MS) {
@@ -148,6 +149,8 @@ ctrl_state* get_state(ControllerPtr ctl) {
             new_ctrls->trim_right = true;
         }
     }
+
+    new_ctrls->y_button_pressed = (ctl->buttons() & XBOX_BUTTON_Y);
 
     // and swap which control set is active
     if (prev_ctrls_are_green) {

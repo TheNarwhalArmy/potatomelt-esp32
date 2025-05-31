@@ -1,4 +1,5 @@
 #include "../melty_config.h"
+#include "../lib/FastLED/FastLED.h" // For CRGB and FastLED control
 
 class LED {
     public:
@@ -11,7 +12,13 @@ class LED {
 
         void leds_on_gradient(int color);
         void leds_off();
+
+        // New method for displaying image columns
+        void display_image_column(CRGB* column_data);
+
     private:
+        CRGB leds_array[NUM_LEDS]; // Array to hold LED color data
+
         void leds_on_rgb(int red, int green, int blue);
-        void write_pixel();
+        // write_pixel() is removed as FastLED.show() handles this.
 };

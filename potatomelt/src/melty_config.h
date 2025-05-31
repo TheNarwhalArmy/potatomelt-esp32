@@ -11,6 +11,7 @@
 // Ant-tato distance: 3.415f
 // Beetle-tato distance: 5.13f
 #define LED_OFFSET_PERCENT 47
+#define NUM_LEDS 20
 
 #define LEFT_RIGHT_HEADING_CONTROL_DIVISOR 2.0f   // How quick steering while melting is (larger values = slower)
 #define MIN_TRACKING_RPM 400
@@ -39,6 +40,7 @@
 #define XBOX_DPAD_DOWN 0x02
 #define XBOX_DPAD_LEFT 0x08
 #define XBOX_BUTTON_X 0x04
+#define XBOX_BUTTON_Y 0x08 // BP32_BUTTON_Y is (1 << 3)
 
 // ------------ Pin and RMT Mappings -----------------
 

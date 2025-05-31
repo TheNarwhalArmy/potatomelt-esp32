@@ -5,6 +5,8 @@
 #include "src/melty_config.h"
 #include "src/controller.h"
 #include "src/subsystems/storage.h"
+#include "src/subsystems/ImageDisplay.h" // For ImageDisplay class
+#include "SPIFFS.h"
 
 TaskHandle_t hotloop;
 
@@ -15,6 +17,10 @@ spin_control_parameters_t control_params;
 tank_control_parameters_t tank_params;
 
 Storage store;
+
+// Image Display related globals
+ImageDisplay image_display_processor;
+bool image_display_active = false;
 
 long last_logged_at = 0;
 
@@ -32,6 +38,20 @@ PID throttle_pid(&pid_current_rpm, &pid_throttle_output, &pid_target_rpm, PID_KP
 void setup() {
     Serial.begin(115200);
     Serial.println("PotatoMelt startup");
+
+    if(!SPIFFS.begin(true)){
+        Serial.println("An Error has occurred while mounting SPIFFS");
+        // Potentially halt or indicate error
+        return;
+    }
+    Serial.println("SPIFFS mounted successfully");
+
+    // Load image for display
+    if (image_display_processor.load_image("/display.png")) {
+        Serial.println("Image /display.png loaded successfully for ImageDisplay.");
+    } else {
+        Serial.println("Failed to load /display.png for ImageDisplay.");
+    }
 
     // set up I2C
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
@@ -122,9 +142,27 @@ void calculate_melty_params(spin_control_parameters_t* params, ctrl_state* c) {
 // Arduino loop function. Runs in CPU 1.
 // todo - low-battery state
 void loop() {
+    static bool y_button_was_pressed_previously = false; // For Y button edge detection
+
     bool upd8 = BP32.update();
 
     ctrl_state* c = ctrl_update(upd8); 
+
+    // Handle Y button press for toggling image display mode
+    if (c->connected && c->alive) {
+        if (c->y_button_pressed && !y_button_was_pressed_previously) {
+            image_display_active = !image_display_active;
+            Serial.printf("Image display mode toggled: %s\n", image_display_active ? "ON" : "OFF");
+        }
+        y_button_was_pressed_previously = c->y_button_pressed;
+    } else {
+        y_button_was_pressed_previously = false; // Reset if controller disconnects
+        // Optionally, turn off image display if controller disconnects:
+        // if (image_display_active) { // Only print if it was active
+        //     image_display_active = false;
+        //     Serial.println("Controller disconnected, image display mode OFF");
+        // }
+    }
 
     if (!c->connected) {
         throttle_pid.SetMode(MANUAL);
@@ -174,7 +212,7 @@ void loop() {
 void hotloopFN(void* parameter) {
     while(true) {
         // do the magic stuff
-        robot.update_loop(state, &control_params, &tank_params);
+        robot.update_loop(state, &control_params, &tank_params, image_display_active, &image_display_processor);
 
         //TODO: Update this to a proper, configurable delay - probably 1-4khz
         vTaskDelay(1);
