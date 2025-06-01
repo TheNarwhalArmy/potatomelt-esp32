@@ -35,11 +35,10 @@ private:
     // Private helper methods if any (e.g., for actual PNG decoding later)
 
     // Pngle callback functions
-    // Forward declare pngle_t or include pngle.h if callbacks need full type.
-    // For now, pngle_t* as an opaque pointer type in declarations is fine.
-    static void pngle_init_callback(struct pngle_t* pngle, uint32_t w, uint32_t h);
-    static void pngle_draw_callback(struct pngle_t* pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint8_t rgba[4]);
-    static void pngle_done_callback(struct pngle_t* pngle);
+    // pngle_t is a typedef defined in pngle.h, which is included by ImageDisplay.cpp
+    static void pngle_init_callback(pngle_t* pngle, uint32_t w, uint32_t h);
+    static void pngle_draw_callback(pngle_t* pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint8_t rgba[4]);
+    static void pngle_done_callback(pngle_t* pngle);
 };
 
 #endif // IMAGE_DISPLAY_H

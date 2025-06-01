@@ -126,7 +126,7 @@ bool ImageDisplay::load_image(const char* filename) {
     while ((len = file.read(buf, BUFFER_SIZE)) > 0) {
         int fed = pngle_feed(pngle, buf, len);
         if (fed < 0) {
-            Serial.printf("Pngle feed error: %s\n", pngle_error_msg(pngle)); // pngle_error_msg is correct
+            Serial.printf("Pngle feed error: %s\n", pngle_error(pngle)); // Corrected function name
             // this->image_loaded will remain false or be set by callbacks
             break;
         }
@@ -140,12 +140,8 @@ bool ImageDisplay::load_image(const char* filename) {
     // If an error occurred during feed, or if done_callback wasn't reached,
     // image_loaded might still be false.
     // The done_callback is responsible for setting image_loaded = true on success if pixel_data is valid.
-    if (pngle_get_state(pngle) == PNGLE_STATE_ERROR && this->image_loaded) {
-        // If pngle is in error state, ensure image_loaded is false, even if done_callback somehow set it true
-        // (e.g. if error happened after done_callback, though unlikely with current pngle_feed structure)
-        Serial.printf("ImageDisplay: Pngle ended in error state (%s), ensuring image_loaded is false.\n", pngle_error_msg(pngle));
-        this->image_loaded = false;
-    }
+    // The block using pngle_get_state() and PNGLE_STATE_ERROR has been removed as per instructions.
+    // Error handling now relies on pngle_feed return value and callbacks setting image_loaded.
 
     pngle_destroy(pngle); // Destroy Pngle instance
 
