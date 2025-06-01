@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "SPIFFS.h"
 #include <FastLED.h>                // Standard include path
+#include <pngle.h>                  // For pngle_t type used in callbacks
 #include "../melty_config.h"       // For NUM_LEDS
 
 // Forward declaration if Pngle types were used directly in headers
