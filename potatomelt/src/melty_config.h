@@ -42,17 +42,17 @@
 
 // ------------ Pin and RMT Mappings -----------------
 
-#define NEOPIXEL_PIN GPIO_NUM_38
-#define MOTOR_1_PIN GPIO_NUM_4
-#define MOTOR_2_PIN GPIO_NUM_5
+#define NEOPIXEL_PIN GPIO_NUM_3
+#define MOTOR_1_PIN GPIO_NUM_1
+#define MOTOR_2_PIN GPIO_NUM_2
 
 #define NEOPIXEL_RMT RMT_CHANNEL_0
 #define MOTOR_1_RMT RMT_CHANNEL_1
 #define MOTOR_2_RMT RMT_CHANNEL_2
 
-#define I2C_SDA_PIN 1
-#define I2C_SCL_PIN 2
-#define BATTERY_ADC_PIN 11
+#define I2C_SDA_PIN 5
+#define I2C_SCL_PIN 6
+#define BATTERY_ADC_PIN 4 // NOT ON THE PCB RIGHT NOW
 
 // ------------ Battery Configuration ---------------
 
