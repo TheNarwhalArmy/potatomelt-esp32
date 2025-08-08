@@ -7,7 +7,7 @@
 #define CONTROL_UPDATE_TIMEOUT_MS 3000
 
 // ------------ Spin control settings ----------------
-#define ACCELEROMETER_HARDWARE_RADIUS_CM 3.00f
+#define ACCELEROMETER_HARDWARE_RADIUS_CM 5.13f
 // Ant-tato distance: 3.415f
 // Beetle-tato distance: 5.13f
 #define LED_OFFSET_PERCENT 47
