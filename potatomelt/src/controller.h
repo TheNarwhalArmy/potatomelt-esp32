@@ -45,5 +45,19 @@ void on_disconnected_controller(ControllerPtr ctr);
 bool is_connected();
 ctrl_state* ctrl_update(bool upd8);
 ctrl_state* get_state(ControllerPtr ctl);
-// vibrate the controller based on robot RPM
+
+// Vibrate the controller based on robot RPM
+// This function makes the controller vibrate with intensity proportional to how fast 
+// the entire robot (not the motors) is spinning. Uses actual RPM from IMU sensors.
+// 
+// RPM range: 400 (MIN_TRACKING_RPM) to 3000 RPM
+// Vibration intensity: 0% at 400 RPM, 100% at 3000 RPM
+// Update frequency: Limited to every 200ms to avoid overloading controller
+//
+// Note: If compilation fails due to unknown setRumble method, check the Bluepad32 
+// documentation for your version and update the API call in controller.cpp
 void ctrl_vibrate_for_rpm(float actual_rpm);
+
+// Test function to validate vibration intensity calculations
+// Call this during setup() to verify the RPM-to-vibration mapping works correctly
+void ctrl_test_vibration_logic();

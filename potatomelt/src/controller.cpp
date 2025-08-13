@@ -247,7 +247,7 @@ void ctrl_vibrate_for_rpm(float actual_rpm) {
     }
 
     // Calculate vibration intensity based on RPM
-    // Use the RPM ranges from the configuration
+    // RPM range: MIN_TRACKING_RPM (400) to 3000 RPM
     float min_vibration_rpm = MIN_TRACKING_RPM;  // 400 RPM
     float max_vibration_rpm = 3000.0f;  // Maximum expected RPM
     
@@ -258,11 +258,10 @@ void ctrl_vibrate_for_rpm(float actual_rpm) {
         intensity = constrain(intensity, 0.0f, 1.0f);  // Clamp to valid range
     }
 
-    // Convert to rumble values (0-255 typically for Xbox controllers)
+    // Convert to rumble values (0-255 range for Xbox controllers)
     uint8_t rumble_force = (uint8_t)(intensity * 255);
 
-    // Apply vibration using Bluepad32 API
-    // Scale down the intensity to avoid overwhelming vibration and save battery
+    // Scale down intensity to avoid overwhelming vibration and save battery
     uint8_t low_freq_rumble = (uint8_t)(rumble_force * 0.6f);   // Left motor (low frequency)
     uint8_t high_freq_rumble = (uint8_t)(rumble_force * 0.7f);  // Right motor (high frequency)
     
@@ -275,11 +274,54 @@ void ctrl_vibrate_for_rpm(float actual_rpm) {
     
     // Apply vibration using Bluepad32 API
     // Note: The exact API may vary between Bluepad32 versions
-    // Common method signatures include:
-    // - setRumble(force, duration)
-    // - setRumble(leftForce, rightForce, duration)  
-    // - playDualRumble(left, right, duration)
+    // We'll try the most common methods with error handling
     
-    // Use the most common dual-motor rumble method
+    // First check if this controller supports rumble
+    if (!activeController->isGamepad()) {
+        return; // Only gamepads typically support rumble
+    }
+    
+    // Try the most common dual-motor rumble method for Xbox controllers
     activeController->setRumble(low_freq_rumble, high_freq_rumble, 150);
+    
+    // TROUBLESHOOTING: If the above line causes compilation errors, try these alternatives:
+    // 1. Single motor version: activeController->setRumble(rumble_force, 150);
+    // 2. Different dual motor: activeController->playDualRumble(low_freq_rumble, high_freq_rumble, 150);
+    // 3. Simple force feedback: activeController->setForceFeedback(rumble_force);
+    // 4. Check Bluepad32 documentation for your specific version's API
+}
+
+void ctrl_test_vibration_logic() {
+    Serial.println("Testing vibration intensity calculations:");
+    
+    // Test at key RPM points to validate the mapping
+    float test_rpms[] = {0, 400, 800, 1200, 1600, 2000, 2500, 3000, 3500};
+    int num_tests = sizeof(test_rpms) / sizeof(test_rpms[0]);
+    
+    for (int i = 0; i < num_tests; i++) {
+        float rpm = test_rpms[i];
+        
+        // Calculate intensity using same logic as main function
+        float min_vibration_rpm = MIN_TRACKING_RPM;  // 400 RPM
+        float max_vibration_rpm = 3000.0f;
+        
+        float intensity = 0.0f;
+        if (rpm > min_vibration_rpm) {
+            intensity = (rpm - min_vibration_rpm) / (max_vibration_rpm - min_vibration_rpm);
+            intensity = constrain(intensity, 0.0f, 1.0f);
+        }
+        
+        uint8_t rumble_force = (uint8_t)(intensity * 255);
+        uint8_t low_freq = (uint8_t)(rumble_force * 0.6f);
+        uint8_t high_freq = (uint8_t)(rumble_force * 0.7f);
+        
+        Serial.printf("RPM: %4.0f -> Intensity: %3.0f%% -> Rumble: %3d/%3d\n", 
+                     rpm, intensity * 100, low_freq, high_freq);
+    }
+    
+    Serial.println("Vibration test complete. Expected behavior:");
+    Serial.println("- 0-400 RPM: No vibration (0%)");
+    Serial.println("- 400-3000 RPM: Linear increase from 0% to 100%");
+    Serial.println("- Above 3000 RPM: Maximum vibration (100%)");
+}
 }

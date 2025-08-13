@@ -49,6 +49,9 @@ void setup() {
 
     // start the control interface
     BP32.setup(&on_connected_controller, &on_disconnected_controller);
+    
+    // Test vibration logic (remove this line after testing)
+    ctrl_test_vibration_logic();
 
     // and start the hot loop - it'll be managing LEDs and motors
     xTaskCreatePinnedToCore(
