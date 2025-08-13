@@ -31,6 +31,7 @@ typedef struct prev_state {
     bool trim_left_pressed;
     bool trim_right_pressed;
     bool spin_target_rpm_changed;
+    bool test_vibration_pressed;
     long last_trim_at;
 };
 

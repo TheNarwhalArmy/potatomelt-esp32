@@ -86,6 +86,15 @@ ctrl_state* get_state(ControllerPtr ctl) {
 
     new_ctrls->reverse_spin = reverse_spin;
 
+    // vibration test trigger
+    if ((ctl->buttons() & XBOX_BUTTON_B) && !previous_state.test_vibration_pressed) {
+        previous_state.test_vibration_pressed = true;
+        Serial.println("B button pressed - running vibration test");
+        ctrl_test_vibration_logic();
+    } else if (!(ctl->buttons() & XBOX_BUTTON_B) && previous_state.test_vibration_pressed) {
+        previous_state.test_vibration_pressed = false;
+    }
+
     // target RPM adjustment
     // forward on the xbox controller gives negative values, for some reason
     // todo - make this only adjust while spinning?

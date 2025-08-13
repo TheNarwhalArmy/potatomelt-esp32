@@ -39,6 +39,7 @@
 #define XBOX_DPAD_DOWN 0x02
 #define XBOX_DPAD_LEFT 0x08
 #define XBOX_BUTTON_X 0x04
+#define XBOX_BUTTON_B 0x02
 
 // ------------ Pin and RMT Mappings -----------------
 
