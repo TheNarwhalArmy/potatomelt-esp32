@@ -2,11 +2,7 @@
 
 PotatoMelt is a drive controller for Meltybrain (translational drift) robots, running on the ESP32-S3 platform.
 
-This library is not guaranteed fit for any purpose, and may cause your robot to just explode instead of doing anything useful. You Have Been Warned.
-
-This is based on the fantastic OpenMelt2: https://github.com/nothinglabs/openmelt2
-
-See also my previous version for atmega32/arduino, https://github.com/skysdottir/potatomelt
+PotatoMelt-ESP32 has been modified for my Meltybrain robot.
 
 ## Controls
 
@@ -25,14 +21,5 @@ Solid blue: Controller connected, ready, in tank mode
 Solid red: Controller connected, battery depleted
 Drawing arcs, green fading to red: Spinning, displaying battery charge
 
-## Just In Case
-
-The arduino project build directory on Windows defaults to: C:\Users\{user}\AppData\Local\Temp\arduino\sketches
-
 # Credits
-
-With apologies to my reviewers:
-Tomash and IrregularJoe
-
-And thanks to those who have contributed and inspired:
-NothingLabs, BlackCatMaxy, Robert K, and Mew
+Skysdottir, NothingLabs, BlackCatMaxy, Robert K, Mew, Tomash, IrregularJoe
