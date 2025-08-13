@@ -282,13 +282,16 @@ void ctrl_vibrate_for_rpm(float actual_rpm) {
     }
     
     // Try the most common dual-motor rumble method for Xbox controllers
-    activeController->playDualRumble(low_freq_rumble, high_freq_rumble, 150);
+    activeController->playDualRumble(0, 150, low_freq_rumble, high_freq_rumble);
     
     // TROUBLESHOOTING: If the above line causes compilation errors, try these alternatives:
-    // 1. Single motor version: activeController->setRumble(rumble_force, 150);
-    // 2. Legacy dual motor (deprecated): activeController->setRumble(low_freq_rumble, high_freq_rumble);
-    // 3. Simple force feedback: activeController->setForceFeedback(rumble_force);
-    // 4. Check Bluepad32 documentation for your specific version's API
+    // 1. Alternative parameter order: activeController->playDualRumble(low_freq_rumble, high_freq_rumble, 0, 150);
+    // 2. Single motor version: activeController->setRumble(rumble_force, 150);
+    // 3. Legacy dual motor (deprecated): activeController->setRumble(low_freq_rumble, high_freq_rumble);
+    // 4. Simple force feedback: activeController->setForceFeedback(rumble_force);
+    // 5. Check Bluepad32 documentation for your specific version's API
+    //
+    // Expected API signature: playDualRumble(uint16_t delayedStartMs, uint16_t durationMs, uint8_t leftRumble, uint8_t rightRumble)
 }
 
 void ctrl_test_vibration_logic() {
