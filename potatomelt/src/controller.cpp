@@ -282,11 +282,11 @@ void ctrl_vibrate_for_rpm(float actual_rpm) {
     }
     
     // Try the most common dual-motor rumble method for Xbox controllers
-    activeController->setRumble(low_freq_rumble, high_freq_rumble, 150);
+    activeController->playDualRumble(low_freq_rumble, high_freq_rumble, 150);
     
     // TROUBLESHOOTING: If the above line causes compilation errors, try these alternatives:
     // 1. Single motor version: activeController->setRumble(rumble_force, 150);
-    // 2. Different dual motor: activeController->playDualRumble(low_freq_rumble, high_freq_rumble, 150);
+    // 2. Legacy dual motor (deprecated): activeController->setRumble(low_freq_rumble, high_freq_rumble);
     // 3. Simple force feedback: activeController->setForceFeedback(rumble_force);
     // 4. Check Bluepad32 documentation for your specific version's API
 }
@@ -323,5 +323,4 @@ void ctrl_test_vibration_logic() {
     Serial.println("- 0-400 RPM: No vibration (0%)");
     Serial.println("- 400-3000 RPM: Linear increase from 0% to 100%");
     Serial.println("- Above 3000 RPM: Maximum vibration (100%)");
-}
 }
