@@ -216,3 +216,70 @@ void on_disconnected_controller(ControllerPtr ctl) {
 
     BP32.enableNewBluetoothConnections(true);
 }
+
+// Track timing for vibration throttling
+static unsigned long last_vibration_time = 0;
+static const unsigned long VIBRATION_INTERVAL_MS = 200; // Update vibration every 200ms
+
+void ctrl_vibrate_for_rpm(float actual_rpm) {
+    if (!connected) {
+        return; // No controller connected
+    }
+
+    // Throttle vibration updates to avoid overloading controller
+    unsigned long now = millis();
+    if (now - last_vibration_time < VIBRATION_INTERVAL_MS) {
+        return;
+    }
+    last_vibration_time = now;
+
+    // Find the connected controller
+    ControllerPtr activeController = nullptr;
+    for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
+        if (myControllers[i] != nullptr && myControllers[i]->isConnected()) {
+            activeController = myControllers[i];
+            break;
+        }
+    }
+
+    if (activeController == nullptr) {
+        return; // No active controller found
+    }
+
+    // Calculate vibration intensity based on RPM
+    // Use the RPM ranges from the configuration
+    float min_vibration_rpm = MIN_TRACKING_RPM;  // 400 RPM
+    float max_vibration_rpm = 3000.0f;  // Maximum expected RPM
+    
+    // Calculate intensity as percentage (0.0 to 1.0)
+    float intensity = 0.0f;
+    if (actual_rpm > min_vibration_rpm) {
+        intensity = (actual_rpm - min_vibration_rpm) / (max_vibration_rpm - min_vibration_rpm);
+        intensity = constrain(intensity, 0.0f, 1.0f);  // Clamp to valid range
+    }
+
+    // Convert to rumble values (0-255 typically for Xbox controllers)
+    uint8_t rumble_force = (uint8_t)(intensity * 255);
+
+    // Apply vibration using Bluepad32 API
+    // Scale down the intensity to avoid overwhelming vibration and save battery
+    uint8_t low_freq_rumble = (uint8_t)(rumble_force * 0.6f);   // Left motor (low frequency)
+    uint8_t high_freq_rumble = (uint8_t)(rumble_force * 0.7f);  // Right motor (high frequency)
+    
+    // Debug output (only print occasionally to avoid spam)
+    static int debug_counter = 0;
+    if (++debug_counter % 10 == 0) {  // Print every 10th vibration call (every ~2 seconds)
+        Serial.printf("Vibration: RPM=%.1f, intensity=%.2f, rumble=%d/%d\n", 
+                     actual_rpm, intensity, low_freq_rumble, high_freq_rumble);
+    }
+    
+    // Apply vibration using Bluepad32 API
+    // Note: The exact API may vary between Bluepad32 versions
+    // Common method signatures include:
+    // - setRumble(force, duration)
+    // - setRumble(leftForce, rightForce, duration)  
+    // - playDualRumble(left, right, duration)
+    
+    // Use the most common dual-motor rumble method
+    activeController->setRumble(low_freq_rumble, high_freq_rumble, 150);
+}

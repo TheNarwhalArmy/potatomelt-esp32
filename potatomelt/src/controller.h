@@ -45,4 +45,5 @@ void on_disconnected_controller(ControllerPtr ctr);
 bool is_connected();
 ctrl_state* ctrl_update(bool upd8);
 ctrl_state* get_state(ControllerPtr ctl);
-// todo - vibrate the controller on big hits? That'd be cute.
+// vibrate the controller based on robot RPM
+void ctrl_vibrate_for_rpm(float actual_rpm);

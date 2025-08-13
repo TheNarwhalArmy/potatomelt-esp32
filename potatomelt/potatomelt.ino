@@ -129,9 +129,13 @@ void loop() {
     if (!c->connected) {
         throttle_pid.SetMode(MANUAL);
         state = NO_CONTROLLER;
+        // Stop vibration when controller disconnected
+        ctrl_vibrate_for_rpm(0.0f);
     } else if (!c->alive) {
         throttle_pid.SetMode(MANUAL);
         state = CONTROLLER_STALE;
+        // Stop vibration when controller stale
+        ctrl_vibrate_for_rpm(0.0f);
     } else if (c->spin_requested) {
         if (state != SPINNING) {
             // we're just starting to spin. Start the PID
@@ -140,9 +144,16 @@ void loop() {
 
         calculate_melty_params(&control_params, c);
         state = SPINNING;
+        
+        // Vibrate controller based on actual robot RPM
+        float actual_rpm = robot.get_rpm(c->target_rpm);
+        ctrl_vibrate_for_rpm(actual_rpm);
     } else {
         throttle_pid.SetMode(MANUAL);
         state = READY;
+
+        // Stop controller vibration when not spinning
+        ctrl_vibrate_for_rpm(0.0f);
 
         tank_params.translate_forback = c->translate_forback;
         tank_params.turn_lr = c->turn_lr;
@@ -157,7 +168,14 @@ void loop() {
     }
 
     if (millis() - last_logged_at > 500) {
-        Serial.printf("Controller: connected: %d alive: %d spin: %d vThrottle: %d | battery: %d | IMU correction %f \n", c->connected, c->alive, c->spin_requested, c->target_rpm, robot.get_battery(), robot.get_accel_trim(c->target_rpm));
+        if (state == SPINNING) {
+            float actual_rpm = robot.get_rpm(c->target_rpm);
+            Serial.printf("Controller: connected: %d alive: %d spin: %d target: %d actual: %.1f | battery: %d | IMU correction %f \n", 
+                         c->connected, c->alive, c->spin_requested, c->target_rpm, actual_rpm, robot.get_battery(), robot.get_accel_trim(c->target_rpm));
+        } else {
+            Serial.printf("Controller: connected: %d alive: %d spin: %d vThrottle: %d | battery: %d | IMU correction %f \n", 
+                         c->connected, c->alive, c->spin_requested, c->target_rpm, robot.get_battery(), robot.get_accel_trim(c->target_rpm));
+        }
         last_logged_at = millis();
     }
 
