@@ -14,7 +14,7 @@ float translation_trims[] = {1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6
 #define NUM_TARGET_RPMS 9
 int target_rpm_index = 3;
 
-#define NUM_TRANS_TRIMS 13
+#define NUM_TRANS_TRIMS 13;
 int target_trans_trim = 4;
 
 bool reverse_spin = false;
