@@ -34,9 +34,9 @@ float Storage::get_accel_correction(int rpm) {
 }
 
 int Storage::get_trans_trim() {
-    return preferences.getInt("target_trans_trim_idx", 4);
+    return preferences.getInt("trans_trim_idx", 4);
 }
 
 void Storage::set_trans_trim(int idx) {
-    preferences.putInt("target_trans_trim_idx", idx);
+    preferences.putInt("trans_trim_idx", idx);
 }
