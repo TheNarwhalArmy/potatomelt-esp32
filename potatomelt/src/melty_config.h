@@ -43,7 +43,6 @@
 // ------------ Pin and RMT Mappings -----------------
 
 #define NEOPIXEL_PIN GPIO_NUM_3
-#define NEOPIXEL_COUNT 3 // Number of NeoPixel LEDs in the chain (change as needed)
 #define MOTOR_1_PIN GPIO_NUM_1
 #define MOTOR_2_PIN GPIO_NUM_2
 
