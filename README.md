@@ -25,18 +25,6 @@ Solid blue: Controller connected, ready, in tank mode
 Solid red: Controller connected, battery depleted
 Drawing arcs, green fading to red: Spinning, displaying battery charge
 
-## Configuration
-
-### Neopixel LED Count
-
-The number of neopixel LEDs in the strip can be configured by changing the `NEOPIXEL_LED_COUNT` value in `potatomelt/src/melty_config.h`. The default is 2 LEDs for backward compatibility.
-
-```cpp
-#define NEOPIXEL_LED_COUNT 2    // Change this to your desired LED count
-```
-
-All LEDs in the strip will display the same color and pattern. Supported values are any positive integer, though practical limits depend on your ESP32's memory and power supply capacity.
-
 ## Just In Case
 
 The arduino project build directory on Windows defaults to: C:\Users\{user}\AppData\Local\Temp\arduino\sketches
