@@ -1,7 +1,7 @@
 # Copilot Coding Agent Instructions for PotatoMelt-ESP32
 
 ## Project Overview
-- **PotatoMelt-ESP32** is a drive controller for Meltybrain (translational drift) robots, targeting the ESP32-S3 platform.
+- **PotatoMelt-ESP32** is a drive controller for Meltybrain (translational drift) combat robots, targeting the ESP32-S3 platform.
 - The codebase is organized for embedded development, with a focus on real-time control, sensor integration, and gamepad-based user input.
 
 ## Key Architecture & Components
