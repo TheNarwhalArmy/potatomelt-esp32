@@ -3,8 +3,8 @@
 #include "led.h"
 #include "../melty_config.h"
 
-rmt_item32_t led_data[NEOPIXEL_LED_COUNT*3*8];
-uint8_t pixel_color[NEOPIXEL_LED_COUNT*3]; 
+rmt_item32_t led_data[6*8];
+uint8_t pixel_color[6]; 
 
 LED::LED() {
     rmt_config_t rmt_cfg = RMT_DEFAULT_CONFIG_TX(NEOPIXEL_PIN, NEOPIXEL_RMT);
@@ -51,19 +51,16 @@ void LED::leds_on_gradient(int color) {
 }
 
 void LED::leds_off() {
-    for (int i = 0; i < NEOPIXEL_LED_COUNT*3; i++) {
-        pixel_color[i] = 0;
-    }
+    pixel_color[0] = pixel_color[1] = pixel_color[2] = 0;
+    pixel_color[3] = pixel_color[4] = pixel_color[5] = 0;
     write_pixel();
 }
 
 void LED::leds_on_rgb(int red, int green, int blue) {
     // neopixels usually use GRB addressing rather than RGB
-    for (int led = 0; led < NEOPIXEL_LED_COUNT; led++) {
-        pixel_color[led*3] = green;
-        pixel_color[led*3 + 1] = red;
-        pixel_color[led*3 + 2] = blue;
-    }
+    pixel_color[0] = pixel_color[3] = green;
+    pixel_color[1] = pixel_color[4] = red;
+    pixel_color[2] = pixel_color[5] = blue;
     write_pixel();
 }
 
@@ -87,5 +84,5 @@ void LED::write_pixel() {
       }
     }
 
-    rmt_write_items(NEOPIXEL_RMT, led_data, NEOPIXEL_LED_COUNT*3*8, false);
+    rmt_write_items(NEOPIXEL_RMT, led_data, 6*8, false);
   }
