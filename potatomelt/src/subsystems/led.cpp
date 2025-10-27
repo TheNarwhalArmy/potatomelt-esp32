@@ -4,12 +4,11 @@
 #include "../melty_config.h"
 
 // Compile-time validation of LED count
-// Valid range: 0-16 LEDs
-// - 0 LEDs: All LED functions become no-ops (graceful degradation)
+// Valid range: 1-16 LEDs
 // - 1-16 LEDs: All LEDs display the same color/pattern
-// - >16 LEDs: Compilation fails with this error
-static_assert(NEOPIXEL_LED_COUNT >= 0 && NEOPIXEL_LED_COUNT <= 16, 
-              "NEOPIXEL_LED_COUNT must be between 0 and 16");
+// - 0 LEDs or >16 LEDs: Compilation fails with this error
+static_assert(NEOPIXEL_LED_COUNT >= 1 && NEOPIXEL_LED_COUNT <= 16, 
+              "NEOPIXEL_LED_COUNT must be between 1 and 16");
 
 // LED data buffers sized by NEOPIXEL_LED_COUNT configuration
 // led_data: RMT timing buffer (3 bytes × 8 bits × 4 bytes/item = 96 bytes per LED)
@@ -27,12 +26,10 @@ LED::LED() {
     rmt_driver_install(rmt_cfg.channel, 0, 0);
 
     // Startup diagnostic: brief flash to confirm LED count
-    if (NEOPIXEL_LED_COUNT > 0) {
-        leds_on_rgb(255, 255, 255);  // White flash
-        delay(100);
-        leds_off();
-        delay(50);
-    }
+    leds_on_rgb(255, 255, 255);  // White flash
+    delay(100);
+    leds_off();
+    delay(50);
 }
 
 void LED::leds_on_ready() {

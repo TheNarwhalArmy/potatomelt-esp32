@@ -42,8 +42,9 @@
 
 // ------------ LED Configuration --------------------
 
-// Number of NeoPixel LEDs (0-16 supported)
+// Number of NeoPixel LEDs (1-16 supported)
 // Default: 2 LEDs for backward compatibility
+// Note: At least 1 LED is required (0 will cause compilation error)
 #define NEOPIXEL_LED_COUNT 2
 
 // Ready state color (armed and operational)
