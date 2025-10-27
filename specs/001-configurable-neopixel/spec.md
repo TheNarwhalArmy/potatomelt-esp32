@@ -5,6 +5,14 @@
 **Status**: Draft  
 **Input**: User description: "modify the LED system to work with a configurable number of neopixel LEDs"
 
+## Clarifications
+
+### Session 2025-10-27
+
+- Q: What should happen if a user configures an LED count above the documented maximum (e.g., sets it to 50 when only 16 is supported)? → A: Add compile-time assertion that fails with clear error if count exceeds maximum
+- Q: Should the LED status colors (ready, low battery, controller warnings) be configurable by the user, or remain as hardcoded values? → A: Make colors configurable via compile-time constants in config file
+- Q: Should there be any visual indication or diagnostic capability to help robot builders verify their LED configuration during development? → A: Brief startup sequence (e.g., LEDs light up sequentially or all flash once) to confirm count
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Configure LED Count at Compile Time (Priority: P1)
@@ -57,15 +65,31 @@ The LED system allocates only the memory required for the configured number of L
 
 ---
 
+### User Story 4 - Startup LED Diagnostic (Priority: P3)
+
+Robot builders can visually verify the configured LED count is working correctly through a brief startup sequence that confirms all configured LEDs are functioning.
+
+**Why this priority**: This is a diagnostic aid that improves development experience but is not critical for robot operation. Helps catch configuration errors early during setup.
+
+**Independent Test**: Can be tested by observing the LED behavior during system initialization with different LED count configurations.
+
+**Acceptance Scenarios**:
+
+1. **Given** any configured LED count, **When** the LED system initializes at startup, **Then** a brief visual sequence confirms all LEDs are operational
+2. **Given** a robot with 4 configured LEDs, **When** startup sequence runs, **Then** the pattern clearly indicates 4 LEDs are active
+
+---
+
 ### Edge Cases
 
 - What happens when LED count is configured to 0? System should handle gracefully (no-op for all LED functions)
-- What happens when LED count exceeds available RAM for RMT buffer? Compilation should succeed; runtime behavior depends on ESP32 memory availability
+- What happens when LED count exceeds the documented maximum? Compilation fails with clear error message indicating the maximum supported count
 - How does system handle invalid LED count values (negative numbers)? Configuration should use unsigned integer type to prevent negative values
 - What happens if the physical LED strip has fewer LEDs than configured? Only the available LEDs will light; others will be unaffected (standard NeoPixel behavior)
 - What happens if the physical LED strip has more LEDs than configured? Extra LEDs remain off; only configured count will be controlled
-
-## Requirements *(mandatory)*
+- **FR-002**: System MUST support LED counts from 0 to at least 16 LEDs
+- **FR-002a**: System MUST fail compilation with a clear error message if configured LED count exceeds the documented maximum
+- **FR-003**: System MUST allocate memory for LED color data based on configured LED count
 
 ### Functional Requirements
 
@@ -79,10 +103,14 @@ The LED system allocates only the memory required for the configured number of L
 - **FR-008**: System MUST handle LED count of 0 gracefully (all LED functions become no-ops)
 - **FR-009**: Configuration constant MUST be located in the melty_config.h file alongside other hardware configuration values
 - **FR-010**: Configuration constant MUST use a clear, descriptive name indicating it controls LED count
+- **FR-011**: System MUST allow status indicator colors to be configured via compile-time constants (ready state, low battery, controller stale, no controller)
+- **FR-012**: Color configuration constants MUST be located in the melty_config.h file alongside LED count configuration
+- **FR-013**: System MUST provide a brief startup diagnostic sequence that visually confirms all configured LEDs are operational
 
 ### Key Entities
 
 - **LED Configuration**: Compile-time setting defining how many NeoPixel LEDs are connected to the robot
+- **LED Color Configuration**: Compile-time settings defining RGB color values for each status state
 - **LED Color Data**: Runtime storage for color information for each configured LED
 - **LED Control Signals**: Runtime storage for transmission data to control the NeoPixel strip
 - **LED Status States**: System states that trigger visual feedback (ready, low battery, controller stale, no controller, gradient, off)
@@ -92,11 +120,13 @@ The LED system allocates only the memory required for the configured number of L
 ### Measurable Outcomes
 
 - **SC-001**: Robot builders can change LED count by modifying a single configuration value and recompiling
+- **SC-001a**: Robot builders can customize status indicator colors by modifying configuration constants and recompiling
 - **SC-002**: System correctly controls any LED count from 1 to 16 LEDs without code changes beyond configuration
 - **SC-003**: All status indicators (ready, low battery, controller warnings) are visible on all configured LEDs
 - **SC-004**: Memory usage scales proportionally with configured LED count (supporting 1-16 LEDs without excessive waste or overflow)
 - **SC-005**: LED visual output remains consistent and reliable for any configured LED count (no flickering, incorrect colors, or communication failures)
 - **SC-006**: Existing robot control code continues to work without modification after upgrading to configurable LED system
+- **SC-007**: Robot builders can visually confirm correct LED configuration during startup without additional tools or serial monitoring
 
 ## Assumptions
 
