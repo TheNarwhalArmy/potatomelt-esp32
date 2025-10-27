@@ -87,14 +87,14 @@ Robot builders can visually verify the configured LED count is working correctly
 - How does system handle invalid LED count values (negative numbers)? Configuration should use unsigned integer type to prevent negative values
 - What happens if the physical LED strip has fewer LEDs than configured? Only the available LEDs will light; others will be unaffected (standard NeoPixel behavior)
 - What happens if the physical LED strip has more LEDs than configured? Extra LEDs remain off; only configured count will be controlled
-- **FR-002**: System MUST support LED counts from 0 to at least 16 LEDs
+- **FR-002**: System MUST support LED counts from 1 to 16 LEDs
 - **FR-002a**: System MUST fail compilation with a clear error message if configured LED count exceeds the documented maximum
 - **FR-003**: System MUST allocate memory for LED color data based on configured LED count
 
 ### Functional Requirements
 
 - **FR-001**: System MUST allow LED count to be configured via a compile-time constant in the configuration file
-- **FR-002**: System MUST support LED counts from 0 to at least 16 LEDs
+- **FR-002**: System MUST support LED counts from 1 to 16 LEDs
 - **FR-003**: System MUST allocate memory for LED color data based on configured LED count
 - **FR-004**: System MUST allocate memory for LED control signals based on configured LED count
 - **FR-005**: All existing LED status functions (ready, low battery, controller stale, no controller, gradient) MUST apply the same color/pattern to all configured LEDs
