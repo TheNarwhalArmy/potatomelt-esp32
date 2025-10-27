@@ -40,6 +40,30 @@
 #define XBOX_DPAD_LEFT 0x08
 #define XBOX_BUTTON_X 0x04
 
+// ------------ LED Configuration --------------------
+
+// Number of NeoPixel LEDs (0-16 supported)
+// Default: 2 LEDs for backward compatibility
+#define NEOPIXEL_LED_COUNT 2
+
+// Ready state color (armed and operational)
+// Default: Blue (R=0, G=0, B=255)
+#define LED_COLOR_READY_R 0
+#define LED_COLOR_READY_G 0
+#define LED_COLOR_READY_B 255
+
+// Low battery warning color
+// Default: Red (R=255, G=0, B=0)
+#define LED_COLOR_LOW_BATTERY_R 255
+#define LED_COLOR_LOW_BATTERY_G 0
+#define LED_COLOR_LOW_BATTERY_B 0
+
+// Controller warning color (stale/disconnected)
+// Default: Red (R=255, G=0, B=0)
+#define LED_COLOR_CONTROLLER_WARNING_R 255
+#define LED_COLOR_CONTROLLER_WARNING_G 0
+#define LED_COLOR_CONTROLLER_WARNING_B 0
+
 // ------------ Pin and RMT Mappings -----------------
 
 #define NEOPIXEL_PIN GPIO_NUM_17

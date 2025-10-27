@@ -3,8 +3,19 @@
 #include "led.h"
 #include "../melty_config.h"
 
-rmt_item32_t led_data[6*8];
-uint8_t pixel_color[6]; 
+// Compile-time validation of LED count
+// Valid range: 0-16 LEDs
+// - 0 LEDs: All LED functions become no-ops (graceful degradation)
+// - 1-16 LEDs: All LEDs display the same color/pattern
+// - >16 LEDs: Compilation fails with this error
+static_assert(NEOPIXEL_LED_COUNT >= 0 && NEOPIXEL_LED_COUNT <= 16, 
+              "NEOPIXEL_LED_COUNT must be between 0 and 16");
+
+// LED data buffers sized by NEOPIXEL_LED_COUNT configuration
+// led_data: RMT timing buffer (3 bytes × 8 bits × 4 bytes/item = 96 bytes per LED)
+// pixel_color: RGB color buffer in GRB format (3 bytes per LED)
+rmt_item32_t led_data[NEOPIXEL_LED_COUNT * 3 * 8];
+uint8_t pixel_color[NEOPIXEL_LED_COUNT * 3]; 
 
 LED::LED() {
     rmt_config_t rmt_cfg = RMT_DEFAULT_CONFIG_TX(NEOPIXEL_PIN, NEOPIXEL_RMT);
@@ -14,21 +25,29 @@ LED::LED() {
     rmt_config(&rmt_cfg);
 
     rmt_driver_install(rmt_cfg.channel, 0, 0);
+
+    // Startup diagnostic: brief flash to confirm LED count
+    if (NEOPIXEL_LED_COUNT > 0) {
+        leds_on_rgb(255, 255, 255);  // White flash
+        delay(100);
+        leds_off();
+        delay(50);
+    }
 }
 
 void LED::leds_on_ready() {
-    leds_on_rgb(0, 0, 255);
+    leds_on_rgb(LED_COLOR_READY_R, LED_COLOR_READY_G, LED_COLOR_READY_B);
 }
 
 void LED::leds_on_low_battery() {
-    leds_on_rgb(255, 0, 0);
+    leds_on_rgb(LED_COLOR_LOW_BATTERY_R, LED_COLOR_LOW_BATTERY_G, LED_COLOR_LOW_BATTERY_B);
 }
 
 void LED::leds_on_controller_stale() {
     long now = millis();
         now /= 100;
         if ((now % 10) < 8) {
-            leds_on_rgb(255, 0, 0);
+            leds_on_rgb(LED_COLOR_CONTROLLER_WARNING_R, LED_COLOR_CONTROLLER_WARNING_G, LED_COLOR_CONTROLLER_WARNING_B);
         } else {
             leds_off();
         }
@@ -38,7 +57,7 @@ void LED::leds_on_no_controller() {
     long now = millis();
         now /= 100;
         if ((now % 10) < 2) {
-            leds_on_rgb(255, 0, 0);
+            leds_on_rgb(LED_COLOR_CONTROLLER_WARNING_R, LED_COLOR_CONTROLLER_WARNING_G, LED_COLOR_CONTROLLER_WARNING_B);
         } else {
             leds_off();
         }
@@ -51,16 +70,21 @@ void LED::leds_on_gradient(int color) {
 }
 
 void LED::leds_off() {
-    pixel_color[0] = pixel_color[1] = pixel_color[2] = 0;
-    pixel_color[3] = pixel_color[4] = pixel_color[5] = 0;
+    // Clear all configured LEDs
+    for (int i = 0; i < NEOPIXEL_LED_COUNT * 3; i++) {
+        pixel_color[i] = 0;
+    }
     write_pixel();
 }
 
 void LED::leds_on_rgb(int red, int green, int blue) {
     // neopixels usually use GRB addressing rather than RGB
-    pixel_color[0] = pixel_color[3] = green;
-    pixel_color[1] = pixel_color[4] = red;
-    pixel_color[2] = pixel_color[5] = blue;
+    // Set all configured LEDs to the same color
+    for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
+        pixel_color[i * 3 + 0] = green;  // G
+        pixel_color[i * 3 + 1] = red;    // R
+        pixel_color[i * 3 + 2] = blue;   // B
+    }
     write_pixel();
 }
 
@@ -84,5 +108,5 @@ void LED::write_pixel() {
       }
     }
 
-    rmt_write_items(NEOPIXEL_RMT, led_data, 6*8, false);
+    rmt_write_items(NEOPIXEL_RMT, led_data, NEOPIXEL_LED_COUNT * 3 * 8, false);
   }

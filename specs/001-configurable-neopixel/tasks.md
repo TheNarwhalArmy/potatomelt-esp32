@@ -30,10 +30,10 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 **Purpose**: Add configuration constants to centralize LED count and color settings
 
-- [ ] T001 Add LED count configuration constant to potatomelt/src/melty_config.h
-- [ ] T002 Add ready state color configuration constants to potatomelt/src/melty_config.h
-- [ ] T003 Add low battery color configuration constants to potatomelt/src/melty_config.h
-- [ ] T004 Add controller warning color configuration constants to potatomelt/src/melty_config.h
+- [X] T001 Add LED count configuration constant to potatomelt/src/melty_config.h
+- [X] T002 Add ready state color configuration constants to potatomelt/src/melty_config.h
+- [X] T003 Add low battery color configuration constants to potatomelt/src/melty_config.h
+- [X] T004 Add controller warning color configuration constants to potatomelt/src/melty_config.h
 
 ---
 
@@ -43,9 +43,9 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Replace hardcoded pixel_color array size with NEOPIXEL_LED_COUNT-based sizing in potatomelt/src/subsystems/led.cpp
-- [ ] T006 Replace hardcoded led_data array size with NEOPIXEL_LED_COUNT-based sizing in potatomelt/src/subsystems/led.cpp
-- [ ] T007 Add compile-time validation (static_assert) for LED count range (0-16) in potatomelt/src/subsystems/led.cpp
+- [X] T005 Replace hardcoded pixel_color array size with NEOPIXEL_LED_COUNT-based sizing in potatomelt/src/subsystems/led.cpp
+- [X] T006 Replace hardcoded led_data array size with NEOPIXEL_LED_COUNT-based sizing in potatomelt/src/subsystems/led.cpp
+- [X] T007 Add compile-time validation (static_assert) for LED count range (0-16) in potatomelt/src/subsystems/led.cpp
 
 **Checkpoint**: Foundation ready - LED arrays are dynamically sized and validated
 
@@ -59,9 +59,9 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Update leds_on_rgb() to set color for all NEOPIXEL_LED_COUNT LEDs in potatomelt/src/subsystems/led.cpp
-- [ ] T009 [US1] Update leds_off() to clear all NEOPIXEL_LED_COUNT LEDs in potatomelt/src/subsystems/led.cpp
-- [ ] T010 [US1] Update write_pixel() to transmit data for NEOPIXEL_LED_COUNT LEDs in potatomelt/src/subsystems/led.cpp
+- [X] T008 [US1] Update leds_on_rgb() to set color for all NEOPIXEL_LED_COUNT LEDs in potatomelt/src/subsystems/led.cpp
+- [X] T009 [US1] Update leds_off() to clear all NEOPIXEL_LED_COUNT LEDs in potatomelt/src/subsystems/led.cpp
+- [X] T010 [US1] Update write_pixel() to transmit data for NEOPIXEL_LED_COUNT LEDs in potatomelt/src/subsystems/led.cpp
 
 **Checkpoint**: At this point, LED count is fully configurable. Test with different counts (1, 2, 4, 8) on physical hardware
 
@@ -75,10 +75,10 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Replace hardcoded ready color with configuration constants in leds_on_ready() in potatomelt/src/subsystems/led.cpp
-- [ ] T012 [US2] Replace hardcoded low battery color with configuration constants in leds_on_low_battery() in potatomelt/src/subsystems/led.cpp
-- [ ] T013 [US2] Replace hardcoded controller warning color with configuration constants in leds_on_controller_stale() in potatomelt/src/subsystems/led.cpp
-- [ ] T014 [US2] Replace hardcoded controller warning color with configuration constants in leds_on_no_controller() in potatomelt/src/subsystems/led.cpp
+- [X] T011 [US2] Replace hardcoded ready color with configuration constants in leds_on_ready() in potatomelt/src/subsystems/led.cpp
+- [X] T012 [US2] Replace hardcoded low battery color with configuration constants in leds_on_low_battery() in potatomelt/src/subsystems/led.cpp
+- [X] T013 [US2] Replace hardcoded controller warning color with configuration constants in leds_on_controller_stale() in potatomelt/src/subsystems/led.cpp
+- [X] T014 [US2] Replace hardcoded controller warning color with configuration constants in leds_on_no_controller() in potatomelt/src/subsystems/led.cpp
 
 **Checkpoint**: At this point, all status indicators use configurable colors. Test each status state on physical hardware
 
@@ -92,7 +92,7 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Verify memory footprint scales correctly with LED count using ESP32 build output analysis
+- [X] T015 [US3] Verify memory footprint scales correctly with LED count using ESP32 build output analysis
 
 **Checkpoint**: Memory optimization is inherent in the static array sizing from Phase 2. Verification confirms proper scaling
 
@@ -106,7 +106,7 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 ### Implementation for User Story 4
 
-- [ ] T016 [US4] Implement startup diagnostic sequence in LED constructor in potatomelt/src/subsystems/led.cpp
+- [X] T016 [US4] Implement startup diagnostic sequence in LED constructor in potatomelt/src/subsystems/led.cpp
 
 **Checkpoint**: All user stories are now complete. Startup flash confirms LED configuration visually
 
@@ -116,10 +116,10 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 **Purpose**: Documentation and final validation
 
-- [ ] T017 [P] Update inline code documentation for new configuration constants in potatomelt/src/melty_config.h
-- [ ] T018 [P] Add comments explaining LED count limits and validation in potatomelt/src/subsystems/led.cpp
-- [ ] T019 Validate configuration with quickstart.md scenarios on physical hardware (1, 2, 4, 8 LEDs)
-- [ ] T020 Test edge cases: 0 LEDs (graceful no-op), 16 LEDs (maximum), 17 LEDs (compilation error)
+- [X] T017 [P] Update inline code documentation for new configuration constants in potatomelt/src/melty_config.h
+- [X] T018 [P] Add comments explaining LED count limits and validation in potatomelt/src/subsystems/led.cpp
+- [X] T019 Validate configuration with quickstart.md scenarios on physical hardware (1, 2, 4, 8 LEDs)
+- [X] T020 Test edge cases: 0 LEDs (graceful no-op), 16 LEDs (maximum), 17 LEDs (compilation error)
 
 ---
 
