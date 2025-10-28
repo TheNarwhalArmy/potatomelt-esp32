@@ -30,9 +30,53 @@ void LED::init() {
 
     rmt_driver_install(rmt_cfg.channel, 0, 0);
 
-    // Startup diagnostic: brief flash to confirm LED count
-    leds_on_rgb(255, 255, 255);  // White flash
-    delay(100);
+    // Startup diagnostic: Sequential LED illumination to confirm LED count
+    // LEDs turn on one by one over 1 second, then stay lit for 1 additional second
+    // First LED: Max green, Last LED: Max blue
+    // Middle LEDs: White with brightness scaling from 10% to 90%
+    
+    // Clear all LEDs first
+    leds_off();
+    
+    // Calculate delay between each LED turning on
+    int delay_per_led = 1000 / NEOPIXEL_LED_COUNT;
+    
+    // Turn on LEDs sequentially
+    for (int led = 0; led < NEOPIXEL_LED_COUNT; led++) {
+        int led_index = led * 3;
+        
+        if (led == 0) {
+            // First LED: Max green
+            pixel_color[led_index + 0] = 255;  // G
+            pixel_color[led_index + 1] = 0;    // R
+            pixel_color[led_index + 2] = 0;    // B
+        } else if (led == NEOPIXEL_LED_COUNT - 1) {
+            // Last LED: Max blue
+            pixel_color[led_index + 0] = 0;    // G
+            pixel_color[led_index + 1] = 0;    // R
+            pixel_color[led_index + 2] = 255;  // B
+        } else {
+            // Middle LEDs: White with brightness scaling from 10% to 90%
+            int middle_count = NEOPIXEL_LED_COUNT - 2;
+            int middle_index = led - 1;  // 0-based index among middle LEDs
+            
+            // Calculate brightness: 10% + (80% * progress)
+            float progress = (middle_count == 1) ? 0.5f : (float)middle_index / (float)(middle_count - 1);
+            int brightness = 25 + (int)(204.0f * progress);  // 25 (10% of 255) to 229 (90% of 255)
+            
+            pixel_color[led_index + 0] = brightness;  // G
+            pixel_color[led_index + 1] = brightness;  // R
+            pixel_color[led_index + 2] = brightness;  // B
+        }
+        
+        write_pixel();
+        delay(delay_per_led);
+    }
+    
+    // Keep all LEDs lit for an additional 1 second
+    delay(1000);
+    
+    // Turn off all LEDs
     leds_off();
     delay(50);
 }
