@@ -3,6 +3,7 @@
 class LED {
     public:
         LED();
+        void init();  // Initialize LED hardware and run diagnostic
 
         void leds_on_ready();
         void leds_on_low_battery();

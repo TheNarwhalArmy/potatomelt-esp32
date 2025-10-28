@@ -122,6 +122,7 @@ float Robot::get_accel_trim(int target_rpm) {
 }
 
 void Robot::init() {
+    leds.init();
     imu.init();
     motor1.begin(DSHOT300);
     motor2.begin(DSHOT300);

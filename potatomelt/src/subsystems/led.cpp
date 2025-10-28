@@ -17,6 +17,11 @@ rmt_item32_t led_data[NEOPIXEL_LED_COUNT * 3 * 8];
 uint8_t pixel_color[NEOPIXEL_LED_COUNT * 3]; 
 
 LED::LED() {
+    // Constructor does minimal initialization - no delays allowed here
+}
+
+void LED::init() {
+    // Initialize RMT peripheral for NeoPixel control
     rmt_config_t rmt_cfg = RMT_DEFAULT_CONFIG_TX(NEOPIXEL_PIN, NEOPIXEL_RMT);
 
     rmt_cfg.clk_div = 8; // slow us down to 10mhz
