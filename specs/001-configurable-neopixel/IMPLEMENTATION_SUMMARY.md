@@ -58,8 +58,8 @@ All tasks from `tasks.md` have been completed:
 
 1. **Compile-time validation**:
    ```cpp
-   static_assert(NEOPIXEL_LED_COUNT >= 0 && NEOPIXEL_LED_COUNT <= 16, 
-                 "NEOPIXEL_LED_COUNT must be between 0 and 16");
+   static_assert(NEOPIXEL_LED_COUNT >= 1 && NEOPIXEL_LED_COUNT <= 16, 
+                 "NEOPIXEL_LED_COUNT must be between 1 and 16");
    ```
 
 2. **Dynamic array sizing**:
@@ -68,15 +68,23 @@ All tasks from `tasks.md` have been completed:
    uint8_t pixel_color[NEOPIXEL_LED_COUNT * 3];
    ```
 
-3. **Startup diagnostic** (in constructor):
+3. **Startup diagnostic** (in init() method):
    ```cpp
-   if (NEOPIXEL_LED_COUNT > 0) {
+   void LED::init() {
+       // Initialize RMT peripheral for NeoPixel control
+       rmt_config_t rmt_cfg = RMT_DEFAULT_CONFIG_TX(NEOPIXEL_PIN, NEOPIXEL_RMT);
+       rmt_cfg.clk_div = 8;
+       rmt_config(&rmt_cfg);
+       rmt_driver_install(rmt_cfg.channel, 0, 0);
+       
+       // Startup diagnostic: brief flash to confirm LED count
        leds_on_rgb(255, 255, 255);  // White flash
        delay(100);
        leds_off();
        delay(50);
    }
    ```
+   **Critical Fix**: Originally in constructor, but caused watchdog timer boot loop. Moved to init() method per embedded best practices (commit d156e1d)
 
 4. **Configurable LED functions**:
    - `leds_on_rgb()`: Sets all N LEDs to same color (loop-based)
@@ -89,12 +97,25 @@ All tasks from `tasks.md` have been completed:
    - `leds_on_controller_stale()`: Uses `LED_COLOR_CONTROLLER_WARNING_*` constants
    - `leds_on_no_controller()`: Uses `LED_COLOR_CONTROLLER_WARNING_*` constants
 
-**Lines Changed**: ~40% of file (arrays, constructor, 6 functions)
+**Lines Changed**: ~40% of file (arrays, constructor, init method, 6 functions)
+
+**Bug Fix Applied** (commit d156e1d): Moved LED initialization and startup diagnostic from constructor to `init()` method to prevent watchdog timer boot loop. ESP32 watchdog timer was triggering during boot due to delays in constructor blocking the initialization sequence.
 
 ---
 
 ### 3. `potatomelt/src/subsystems/led.h`
-**Changes**: None (API preserved for backward compatibility)
+**Changes**: Added `init()` method declaration
+
+```cpp
+class LED {
+    public:
+        LED();
+        void init();  // Initialize LED hardware and run diagnostic
+        // ... other methods
+};
+```
+
+**Architecture Decision**: Separates construction from initialization to prevent blocking delays in constructors (embedded systems best practice)
 
 ---
 
@@ -179,7 +200,9 @@ Default configuration preserves exact original behavior:
 - `LED_COLOR_LOW_BATTERY = RGB(255, 0, 0)` (red)
 - `LED_COLOR_CONTROLLER_WARNING = RGB(255, 0, 0)` (red)
 
-**Only difference**: 150ms startup diagnostic flash (new feature)
+**Only difference**: 150ms startup diagnostic flash during `init()` (new feature)
+
+**Architecture Change**: LED initialization now requires explicit `leds.init()` call (added to `Robot::init()`). This prevents watchdog timer issues and follows embedded best practices.
 
 Existing robots with 2 LEDs require no configuration changes.
 
@@ -273,6 +296,27 @@ All constitution principles satisfied:
 3. **Single Color Pattern**: All LEDs display same color simultaneously (per spec, not a bug)
 4. **No Runtime Configuration**: LED count is compile-time only (per spec design decision)
 
+## Issues Fixed Post-Implementation
+
+### Watchdog Timer Boot Loop (Fixed in commit d156e1d)
+**Issue**: ESP32 watchdog timer triggered during boot, causing infinite reset loop
+
+**Root Cause**: Original implementation placed LED initialization and startup diagnostic delays (150ms total) in the `LED()` constructor. The constructor is called during global object initialization before the ESP32 system is fully initialized, blocking the boot sequence and triggering the watchdog timer.
+
+**Solution**: 
+- Created separate `LED::init()` method for hardware initialization
+- Moved RMT peripheral configuration to `init()`
+- Moved startup diagnostic delays to `init()`
+- Constructor now performs minimal initialization only (no delays)
+- `LED::init()` is called from `Robot::init()` after system initialization completes
+
+**Architecture Improvement**: This fix aligns with embedded systems best practice - constructors should never block or delay. All hardware initialization requiring delays should be in explicit init() methods called after system startup.
+
+**Files Modified**:
+- `potatomelt/src/subsystems/led.h`: Added `init()` method declaration
+- `potatomelt/src/subsystems/led.cpp`: Moved initialization from constructor to `init()`
+- `potatomelt/src/robot.cpp`: Added `leds.init()` call in `Robot::init()`
+
 ---
 
 ## Migration Guide
@@ -304,10 +348,11 @@ See `specs/001-configurable-neopixel/quickstart.md` for complete guide.
 ## Implementation Metrics
 
 - **Total Development Time**: ~1 hour (automated implementation)
-- **Lines Added**: ~60 (config constants, documentation, validation)
+- **Lines Added**: ~60 (config constants, documentation, validation, init method)
 - **Lines Modified**: ~40 (LED functions, array sizing)
 - **Lines Deleted**: ~10 (hardcoded values)
-- **Files Modified**: 2 (melty_config.h, led.cpp)
+- **Files Modified**: 4 (melty_config.h, led.h, led.cpp, robot.cpp)
+- **Post-Implementation Fixes**: 1 (watchdog timer boot loop - commit d156e1d)
 - **Files Created**: 2 (TESTING.md, this summary)
 - **Constitution Violations**: 0
 - **Breaking Changes**: 0

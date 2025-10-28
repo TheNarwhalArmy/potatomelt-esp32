@@ -71,23 +71,22 @@ Test each scenario from `quickstart.md` on physical hardware:
 
 ### T020: Edge Case Validation
 
-#### Edge Case 1: Zero LEDs (Graceful Degradation)
+#### Edge Case 1: Zero LEDs (Compilation Error - Expected)
 ```cpp
 #define NEOPIXEL_LED_COUNT 0
 ```
 **Expected Results**:
-- ✓ Compilation succeeds with no warnings
-- ✓ Boot: No LED activity (no flash)
-- ✓ All LED function calls are no-ops
-- ✓ No runtime errors or crashes
-- ✓ Robot operates normally without LEDs
+- ✓ Compilation FAILS with static_assert error
+- ✓ Error message: "NEOPIXEL_LED_COUNT must be between 1 and 16"
+- ✓ Prevents invalid configuration at compile time
 
 **Validation Method**:
 1. Set `NEOPIXEL_LED_COUNT` to 0
-2. Compile and upload to ESP32-S3
-3. Verify no LED activity occurs
-4. Verify robot functions normally
-5. Check serial output for any errors
+2. Attempt compilation
+3. Verify compilation fails with expected error message
+4. Confirms compile-time validation working correctly
+
+**Note**: 0 LED support was intentionally removed to prevent watchdog timer issues during boot. The `init()` method now assumes at least 1 LED is present.
 
 ---
 
@@ -292,11 +291,18 @@ For each LED count configuration (1, 2, 4, 8), verify all status indicators:
 
 ## Troubleshooting Common Issues
 
+### Issue: Watchdog Timer Boot Loop (FIXED - commit d156e1d)
+**Symptom**: ESP32 continuously resets during boot, never reaches main loop
+**Root Cause**: LED initialization delays in constructor blocking boot sequence
+**Fix Applied**: LED initialization moved to `init()` method called after system startup
+**Status**: ✅ RESOLVED - No action required
+
 ### Issue: LEDs don't light up
 **Check**:
 - Physical wiring (data pin, power, ground)
 - `NEOPIXEL_PIN` matches hardware configuration
 - 5V power supply connected for strips >2 LEDs
+- Verify `leds.init()` is called from `Robot::init()`
 
 ### Issue: Wrong number of LEDs light up
 **Check**:
@@ -311,7 +317,7 @@ For each LED count configuration (1, 2, 4, 8), verify all status indicators:
 
 ### Issue: Compilation fails
 **Check**:
-- `NEOPIXEL_LED_COUNT` is between 0 and 16
+- `NEOPIXEL_LED_COUNT` is between 1 and 16 (0 LEDs no longer supported after bug fix)
 - Configuration constants are defined in `melty_config.h`
 
 ---

@@ -106,7 +106,10 @@ description: "Task list for Configurable NeoPixel LED Count feature"
 
 ### Implementation for User Story 4
 
-- [X] T016 [US4] Implement startup diagnostic sequence in LED constructor in potatomelt/src/subsystems/led.cpp
+- [X] T016 [US4] Implement startup diagnostic sequence in LED init() method in potatomelt/src/subsystems/led.cpp
+  - **Note**: Originally implemented in constructor, but caused watchdog timer boot loop due to delays
+  - **Fix**: Moved to separate init() method called from Robot::init() (commit d156e1d)
+  - **Architecture**: Constructors must not block - delays only in init methods
 
 **Checkpoint**: All user stories are now complete. Startup flash confirms LED configuration visually
 

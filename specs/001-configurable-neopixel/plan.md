@@ -140,6 +140,28 @@ Re-evaluating all principles after design phase:
 
 ---
 
+## Post-Implementation Notes
+
+### Architecture Lessons Learned
+
+**Issue**: Watchdog Timer Boot Loop (Fixed in commit d156e1d)
+
+During initial implementation, the LED startup diagnostic was placed in the `LED()` constructor with `delay()` calls. This caused an ESP32 watchdog timer boot loop because:
+- Global object constructors run before ESP32 system initialization
+- Delays in constructors block the boot sequence
+- ESP32 watchdog timer triggers on blocked boot (~300ms timeout)
+
+**Solution**: Separated construction from initialization by:
+1. Creating explicit `LED::init()` method
+2. Moving hardware setup and delays to `init()`
+3. Calling `leds.init()` from `Robot::init()` after system startup
+4. Keeping constructor minimal (no blocking operations)
+
+**Constitution Alignment**: This fix reinforces **Constitution V (Embedded Systems Best Practices)**:
+> "Constructors must not block or delay. All hardware initialization requiring delays must be in explicit init() methods called after system startup."
+
+This pattern should be applied to all subsystems requiring hardware initialization.
+
 ## Next Steps (Not Part of /speckit.plan)
 
 The `/speckit.plan` command completes after Phase 1 design. To continue:

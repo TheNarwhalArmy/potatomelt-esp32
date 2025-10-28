@@ -15,14 +15,16 @@ This document defines the data structures and configuration entities for the con
 **Entity**: `NEOPIXEL_LED_COUNT`  
 **Type**: Compile-time constant (`#define`)  
 **Location**: `melty_config.h`  
-**Valid Range**: 0 to 16 (inclusive)
+**Valid Range**: 1 to 16 (inclusive)
 
 **Purpose**: Defines the number of NeoPixel LEDs connected to the robot's data line.
 
 **Validation Rules**:
-- MUST be a non-negative integer
-- MUST be ≤ 16 (enforced by static_assert)
-- Value of 0 is valid (all LED functions become no-ops)
+- MUST be a positive integer (≥ 1)
+- MUST be ≤ 16 (enforced by static_assert at compile time)
+- Value of 0 is NOT valid (will fail static_assert)
+
+**Architectural Note**: After bugfix commit d156e1d, the minimum value is 1 LED (not 0). The LED initialization in `init()` method assumes at least one LED is present to avoid unnecessary complexity and prevent watchdog timer issues.
 
 **Default Value**: 2 (maintains backward compatibility with existing robots)
 
@@ -186,14 +188,12 @@ The LED system displays different colors/patterns based on robot state:
          │               ├─> Controller stale ──> CONTROLLER STALE (Slow blink)
          │               │
          │               └─> Spinning ──> GRADIENT (Red-Yellow-Green)
-         │
-         └─> LED count = 0 ──> All functions are no-ops
 
 ```
 
 **State Definitions**:
 
-1. **System Boot** (transient): White flash for 100ms, then off for 50ms
+1. **System Boot** (transient): White flash for 100ms, then off for 50ms (in `init()` method)
 2. **No Controller**: Red rapid blink (200ms on, 800ms off cycle)
 3. **Controller Stale**: Red slow blink (800ms on, 200ms off cycle)
 4. **Ready**: Solid blue (or configured ready color)
@@ -201,13 +201,14 @@ The LED system displays different colors/patterns based on robot state:
 6. **Gradient**: Color calculated based on input value (0-100)
 7. **Off**: All LEDs extinguished
 
+**Note**: State machine requires at least 1 LED (NEOPIXEL_LED_COUNT ≥ 1). The 0 LED case was removed in bugfix commit d156e1d.
+
 ---
 
 ## Memory Footprint Analysis
 
 | LED Count | pixel_color[] | led_data[] | Total Memory | Percentage of 512KB SRAM |
 |-----------|---------------|------------|--------------|--------------------------|
-| 0         | 0 bytes       | 0 bytes    | 0 bytes      | 0%                       |
 | 1         | 3 bytes       | 96 bytes   | 99 bytes     | 0.02%                    |
 | 2         | 6 bytes       | 192 bytes  | 198 bytes    | 0.04%                    |
 | 4         | 12 bytes      | 384 bytes  | 396 bytes    | 0.08%                    |
@@ -221,18 +222,21 @@ The LED system displays different colors/patterns based on robot state:
 
 **Observation**: Even at maximum 16 LEDs, memory usage is negligible (0.31% of available SRAM).
 
+**Note**: 0 LED configuration no longer supported (minimum is 1 LED).
+
 ---
 
 ## API Contracts
 
-### Public Methods (unchanged from current implementation)
+### Public Methods
 
 All public methods maintain existing signatures for backward compatibility:
 
 ```cpp
 class LED {
 public:
-    LED();  // Constructor: Initialize RMT, perform startup diagnostic
+    LED();                                   // Constructor: Minimal initialization only
+    void init();                             // Initialize hardware, perform startup diagnostic
     
     void leds_on_ready();                    // Display ready state color
     void leds_on_low_battery();              // Display low battery color
@@ -243,15 +247,26 @@ public:
 };
 ```
 
+**API Changes** (commit d156e1d):
+- **NEW**: `void init()` method - must be called explicitly after construction
+- **MODIFIED**: Constructor no longer performs hardware initialization or delays
+- All other methods unchanged
+
 **Behavioral Changes**:
 - All methods now affect `NEOPIXEL_LED_COUNT` LEDs instead of hardcoded 2 LEDs
 - Color values come from configuration constants instead of hardcoded literals
-- Constructor performs brief startup diagnostic (150ms delay)
+- `init()` performs brief startup diagnostic (150ms delay) - not in constructor
+- Requires explicit `leds.init()` call during system initialization
+
+**Architecture**:
+- Constructor: Minimal setup, no blocking operations
+- `init()`: Hardware initialization, RMT configuration, startup diagnostic
+- Separation prevents watchdog timer issues during boot
 
 **Compatibility**:
-- Existing caller code requires no modifications
-- Default configuration (2 LEDs, original colors) preserves exact original behavior
-- Zero LED count causes all methods to become no-ops (graceful degradation)
+- **Breaking Change**: Requires adding `leds.init()` call to initialization code
+- Default configuration (2 LEDs, original colors) preserves display behavior
+- Minimum LED count is 1 (0 LEDs causes static_assert compilation failure)
 
 ---
 
@@ -260,11 +275,12 @@ public:
 | Requirement | Validation Method | Enforcement Point |
 |-------------|------------------|-------------------|
 | FR-001: Configurable LED count | Compile-time constant | `melty_config.h` |
-| FR-002: Support 0-16 LEDs | static_assert | `led.cpp` |
-| FR-002a: Compile error if count > 16 | static_assert | `led.cpp` |
+| FR-002: Support 1-16 LEDs | static_assert | `led.cpp` |
+| FR-002a: Compile error if count < 1 or > 16 | static_assert | `led.cpp` |
 | FR-003: Memory scaled by count | Array sizing | `led.cpp` |
 | FR-011: Configurable colors | Compile-time constants | `melty_config.h` |
-| FR-013: Startup diagnostic | Constructor implementation | `led.cpp` |
+| FR-013: Startup diagnostic | `init()` method implementation | `led.cpp` |
+| Architecture: No blocking in constructor | Delays moved to `init()` | `led.cpp` / `robot.cpp` |
 
 ---
 
