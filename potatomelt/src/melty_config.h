@@ -8,8 +8,6 @@
 
 // ------------ Spin control settings ----------------
 #define ACCELEROMETER_HARDWARE_RADIUS_CM 5.13f
-// Ant-tato distance: 3.415f
-// Beetle-tato distance: 5.13f
 #define LED_OFFSET_PERCENT 47
 
 #define LEFT_RIGHT_HEADING_CONTROL_DIVISOR 2.0f   // How quick steering while melting is (larger values = slower)
@@ -43,49 +41,44 @@
 // ------------ LED Configuration --------------------
 
 // Number of NeoPixel LEDs (1-16 supported)
-// Default: 2 LEDs for backward compatibility
-// Note: At least 1 LED is required (0 will cause compilation error)
 #define NEOPIXEL_LED_COUNT 2
 
 // Ready state color (armed and operational)
-// Default: Blue (R=0, G=0, B=255)
 #define LED_COLOR_READY_R 0
-#define LED_COLOR_READY_G 0
-#define LED_COLOR_READY_B 255
+#define LED_COLOR_READY_G 255
+#define LED_COLOR_READY_B 0
 
 // Low battery warning color
-// Default: Red (R=255, G=0, B=0)
-#define LED_COLOR_LOW_BATTERY_R 255
+#define LED_COLOR_LOW_BATTERY_R 0
 #define LED_COLOR_LOW_BATTERY_G 0
-#define LED_COLOR_LOW_BATTERY_B 0
+#define LED_COLOR_LOW_BATTERY_B 255
 
 // Controller warning color (stale/disconnected)
-// Default: Red (R=255, G=0, B=0)
 #define LED_COLOR_CONTROLLER_WARNING_R 255
 #define LED_COLOR_CONTROLLER_WARNING_G 0
 #define LED_COLOR_CONTROLLER_WARNING_B 0
 
 // ------------ Pin and RMT Mappings -----------------
+// Check PCB Design for correct pins
 
-#define NEOPIXEL_PIN GPIO_NUM_17
-#define MOTOR_1_PIN GPIO_NUM_6
-#define MOTOR_2_PIN GPIO_NUM_7
+#define NEOPIXEL_PIN GPIO_NUM_1
+#define MOTOR_1_PIN GPIO_NUM_2
+#define MOTOR_2_PIN GPIO_NUM_40
+
+#define I2C_SDA_PIN 5
+#define I2C_SCL_PIN 6
+#define BATTERY_ADC_PIN 10
 
 #define NEOPIXEL_RMT RMT_CHANNEL_0
 #define MOTOR_1_RMT RMT_CHANNEL_1
 #define MOTOR_2_RMT RMT_CHANNEL_2
-
-#define I2C_SDA_PIN 8
-#define I2C_SCL_PIN 9
-#define BATTERY_ADC_PIN 10
 
 // ------------ Battery Configuration ---------------
 
 #define BATTERY_ALERT_ENABLED                     // if enabled - heading LED will flicker when battery voltage is low
 #define BATTERY_CRIT_HALT_ENABLED                 // if enabled - robot will halt when battery voltage is critically low
 #define BATTERY_VOLTAGE_DIVIDER 8.24              // From the PCB - what's the voltage divider betweeen the battery + and the sense line?
-#define BATTERY_CELL_COUNT 4                      // How many cells are in the battery?
-// Beetle-tato count: 4
+#define BATTERY_CELL_COUNT 3                      // How many cells are in the battery?
 #define BATTERY_CELL_FULL_VOLTAGE 4.2             // What voltage is a fully-charged cell? Standard lipos are 4.2v, other chemistries will vary
 #define BATTERY_CELL_EMPTY_VOLTAGE 3.2            // And on the other hand, what voltage is an empty cell? We're going to cut off at 3.2v/cell
 #define LOW_BAT_REPEAT_READS_BEFORE_ALARM 20      // Requires this many ADC reads below threshold before halting the robot
