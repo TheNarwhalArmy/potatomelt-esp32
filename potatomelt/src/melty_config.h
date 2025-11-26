@@ -61,9 +61,9 @@
 // ------------ Pin and RMT Mappings -----------------
 // Check PCB Design for correct pins
 
-#define NEOPIXEL_PIN GPIO_NUM_1
-#define MOTOR_1_PIN GPIO_NUM_2
-#define MOTOR_2_PIN GPIO_NUM_40
+#define NEOPIXEL_PIN GPIO_NUM_7
+#define MOTOR_1_PIN GPIO_NUM_1
+#define MOTOR_2_PIN GPIO_NUM_2
 
 #define I2C_SDA_PIN 5
 #define I2C_SCL_PIN 6
