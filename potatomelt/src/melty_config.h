@@ -41,7 +41,7 @@
 // ------------ LED Configuration --------------------
 
 // Number of NeoPixel LEDs (1-16 supported)
-#define NEOPIXEL_LED_COUNT 5
+#define NEOPIXEL_LED_COUNT 4
 
 // Ready state color (armed and operational)
 #define LED_COLOR_READY_R 0
