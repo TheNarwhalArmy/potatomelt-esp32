@@ -23,8 +23,8 @@
 #define CONTROL_SPIN_SPEED_DEADZONE 200
 #define CONTROL_THROTTLE_MINIMUM 500
 
-#define TANK_FORBACK_POWER_SCALE 0.02f // Scale the power waaaaay down on tank mode
-#define TANK_TURNING_POWER_SCALE 0.005f // because we're sitting on a pair of ungeared brushless motors
+#define TANK_FORBACK_POWER_SCALE 0.40f // Scale the power waaaaay down on tank mode
+#define TANK_TURNING_POWER_SCALE 0.40f // because we're sitting on a pair of ungeared brushless motors
 
 // ------------ PID tuning ---------------------------
 // Tuning PIDs is an art. See: https://pidexplained.com/how-to-tune-a-pid-controller/
